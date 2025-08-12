@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
-export default function LoginPage() {
-  const signIn = async (formData: FormData) => {
+export default function RegisterPage() {
+  const signUp = async (formData: FormData) => {
     'use server'
     
     const email = formData.get('email') as string
@@ -14,18 +14,17 @@ export default function LoginPage() {
     
     const supabase = createClient()
     
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     })
     
     if (error) {
-      redirect('/login?message=Could not authenticate user')
+      redirect('/register?message=Could not create user')
     }
     
-    redirect('/')
+    redirect('/login?message=Check email to confirm account')
   }
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -35,16 +34,16 @@ export default function LoginPage() {
             Abundance Projects
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your account
+            Create your account
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle>Sign Up</CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={signIn} className="space-y-4">
+            <form action={signUp} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email
@@ -72,15 +71,15 @@ export default function LoginPage() {
               </div>
               
               <Button type="submit" className="w-full">
-                Sign In
+                Create Account
               </Button>
             </form>
             
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
-                  Sign up
+                Already have an account?{' '}
+                <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                  Sign in
                 </Link>
               </p>
             </div>
