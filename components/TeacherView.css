@@ -197,7 +197,7 @@
 .chat-messages {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   justify-content: flex-start;
   width: 100%;
   gap: 10px;
@@ -206,11 +206,10 @@
 .user-message {
   background-color: var(--text-bg);
   border-radius: 8px;
-  height: 34px;
-  width: 340px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
+  display: inline-flex;
+  align-self: flex-end;
+  max-width: 100%;
+  padding: 8px 12px;
   color: var(--color-primary);
 }
 
@@ -276,6 +275,7 @@
   gap: 10px;
   padding: 30px;
   height: 100%;
+  min-height: 0; /* allow children to grow */
 }
 
 .project-header {
@@ -294,8 +294,8 @@
 }
 
 .teacher-avatar {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--color-stroke-g);
   background-color: #FFE100;
@@ -312,8 +312,8 @@
 }
 
 .student-avatar {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--color-stroke-g);
   background-color: var(--bg-default);
@@ -328,8 +328,9 @@
   background-color: var(--bg-default);
   border: 1px solid var(--color-stroke-g);
   border-radius: 20px;
-  height: 252px;
   width: 100%;
+  min-height: 260px;
+  flex: 0 0 260px; /* fixed top block */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -337,13 +338,31 @@
   color: var(--color-primary);
 }
 
+.section-card { position: relative; }
+.toggle-abs {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary);
+}
+.card-title {
+  width: 100%;
+  text-align: center;
+}
+
+.card-body { flex: 1; }
+
 .bottom-row {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  flex: 1;
+  flex: 1 1 auto; /* fill the remaining height */
   min-height: 0;
   width: 100%;
+  align-items: stretch;
 }
 
 .steps-section,
@@ -351,15 +370,30 @@
   background-color: var(--bg-default);
   border: 1px solid var(--color-stroke-g);
   border-radius: 20px;
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   padding: 10px;
   color: var(--color-primary);
 }
+
+.collapsed-bar {
+  margin-left: auto;
+  background-color: var(--bg-default);
+  border: 1px solid var(--color-stroke-g);
+  border-radius: 999px;
+  padding: 8px 12px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.collapsed-wide { flex: 1; margin-left: 16px; margin-right: 0; }
+
+.chevron { margin-left: 4px; }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
@@ -380,14 +414,14 @@
   }
   
   .bottom-row {
-    flex-direction: column;
+    flex-direction: row; /* keep split 50/50 at this breakpoint too */
     gap: 10px;
   }
   
   .steps-section,
   .data-section {
-    height: 80px;
-    min-height: 80px;
+    height: 100%;
+    min-height: 0;
   }
 }
 

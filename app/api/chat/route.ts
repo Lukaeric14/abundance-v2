@@ -5,6 +5,9 @@ import { ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts
 import { RunnableSequence } from '@langchain/core/runnables'
 import { HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 // Helper: ensure tables exist (no-op if already exist). Safe for prototype.
 async function ensureChat(sessionEmail: string) {
   const supabase = createClient()
@@ -107,7 +110,7 @@ export async function POST(req: NextRequest) {
       life_skill: project.life_skill,
       group_size: Number(project.group_size) || 2,
       duration_min: Number(project.duration_min) || 30,
-      spec_json: project.spec_json ?? {},
+      spec_json: { ...(project.spec_json ?? {}), chat_id: currentChatId },
     })
     .select('id')
     .single()
@@ -116,10 +119,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: insert.error.message }, { status: 500 })
   }
 
-  // Save assistant confirmation message
+  // Save a human-friendly assistant confirmation message as the final message
+  const confirmation = `Generated project: ${project.title || 'Untitled Project'}.`
   await supabase
     .from('chat_messages')
-    .insert({ chat_id: currentChatId, role: 'assistant', content: text })
+    .insert({ chat_id: currentChatId, role: 'assistant', content: confirmation })
 
   return NextResponse.json({ action: 'generate_project', projectId: insert.data.id })
 }
