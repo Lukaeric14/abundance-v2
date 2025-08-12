@@ -1,100 +1,221 @@
-# Abundance Projects - Styling Guidelines
+Here’s your **Abundance – Prototype V0 Styling Guidelines** rewritten in **Markdown**:
+
+---
+
+# Styling Guidelines for **Abundance – Prototype V0**
+
+## Core Principles
+
+### 1. **Global CSS First**
+
+* All typography, colors, and base styling **must** come from **global CSS variables and classes**.
+* Component-specific CSS should **only** handle **layout and unique component structure**.
+* **Never** use inline styles for static styling.
+
+### 2. **Two-Tier CSS Architecture**
+
+* **Public Application**: Uses `src/index.css` with **Inter** font (weights: Semi Bold and Regular).
+* **Admin / Builder Panel**: Uses the same Inter-based system for consistency.
+* Components automatically get the correct font and color variables from global classes.
+
+### 3. **No Inline Styles Policy**
+
+* **Forbidden**: Static inline styles for fonts, colors, spacing, layout.
+* **Allowed**: Dynamic values (CSS custom properties, transforms, animations).
+* **Allowed**: Functional requirements (e.g., hidden file inputs).
+
+---
 
 ## Color System
 
-### Primary Colors
-- **Primary**: `hsl(221.2 83.2% 53.3%)` - Main brand color for CTAs and links
-- **Primary Foreground**: `hsl(210 40% 98%)` - Text on primary backgrounds
+Only use these predefined global variables (from your provided palette):
 
-### Background Colors
-- **Background**: `hsl(0 0% 100%)` - Main page background (white)
-- **Foreground**: `hsl(222.2 84% 4.9%)` - Main text color (dark gray/black)
+| Token Name           | Hex Value               | Usage                        |
+| -------------------- | ----------------------- | ---------------------------- |
+| `--color-primary`    | `#171717`               | Primary text & icons         |
+| `--color-primary-60` | `rgba(23, 23, 23, 0.6)` | Muted text, disabled states  |
+| `--color-primary-70` | `rgba(23, 23, 23, 0.7)` | Secondary emphasis           |
+| `--color-secondary`  | `#D7AC00`               | Accent buttons, highlights   |
+| `--color-stroke-y`   | `#F6EBBF`               | Decorative yellow strokes    |
+| `--color-stroke-g`   | `#F1F1F1`               | Neutral strokes & borders    |
+| `--bg-default`       | `#FFFEFA`               | Default background           |
+| `--bg-container`     | `#FFFBF2`               | Card/container background    |
+| `--text-bg`          | `#F7F4EE`               | Background for text emphasis |
 
-### Secondary Colors
-- **Secondary**: `hsl(210 40% 96%)` - Light gray backgrounds
-- **Secondary Foreground**: `hsl(222.2 84% 4.9%)` - Text on secondary backgrounds
+**Rule:** No hardcoded colors in components — always reference CSS variables.
 
-### Muted Colors
-- **Muted**: `hsl(210 40% 96%)` - Subtle backgrounds
-- **Muted Foreground**: `hsl(215.4 16.3% 46.9%)` - Secondary text, captions
+---
 
-### Utility Colors
-- **Border**: `hsl(214.3 31.8% 91.4%)` - Default border color
-- **Input**: `hsl(214.3 31.8% 91.4%)` - Input field borders
+## Typography System
 
-## Typography
+**Font:** `Inter`
+**Weights:** Semi Bold (SB), Regular (R)
+**Sizes:**
 
-### Headings
-- **H1**: `text-4xl font-bold tracking-tight` - Page titles
-- **H2**: `text-3xl font-semibold` - Section titles
-- **H3**: `text-2xl font-semibold` - Card titles
-- **H4**: `text-xl font-medium` - Subsection titles
+* `SB-16` → 16px Semi Bold
+* `R-16` → 16px Regular
+* `SB-14` → 14px Semi Bold
+* `R-14` → 14px Regular
+* `SB-12` → 12px Semi Bold
+* `R-12` → 12px Regular
 
-### Body Text
-- **Base**: `text-base` (16px) - Primary body text
-- **Small**: `text-sm` (14px) - Secondary text, captions
-- **Large**: `text-lg` (18px) - Emphasized content
+**Global class naming convention:**
 
-### Font Weights
-- **Normal**: `font-normal` (400)
-- **Medium**: `font-medium` (500) - Labels, important text
-- **Semibold**: `font-semibold` (600) - Headings
-- **Bold**: `font-bold` (700) - Page titles
+```css
+.text-sb-16 { font-family: Inter; font-weight: 600; font-size: 16px; }
+.text-r-16  { font-family: Inter; font-weight: 400; font-size: 16px; }
+.text-sb-14 { font-family: Inter; font-weight: 600; font-size: 14px; }
+.text-r-14  { font-family: Inter; font-weight: 400; font-size: 14px; }
+.text-sb-12 { font-family: Inter; font-weight: 600; font-size: 12px; }
+.text-r-12  { font-family: Inter; font-weight: 400; font-size: 12px; }
+```
 
-## Spacing
+**Rules:**
 
-### Component Spacing
-- **Form Elements**: `space-y-6` - Consistent form field spacing
-- **Card Content**: `p-6` - Standard card padding
-- **Button Height**: `h-11` - Consistent button height
-- **Input Height**: `h-11` - Matching input height
+* Always use a predefined typography class.
+* No font properties in component CSS.
+* Match Figma typography exactly.
 
-### Layout Spacing
-- **Page Padding**: `px-4` - Minimum side padding
-- **Section Gap**: `space-y-8` - Between major sections
-- **Element Gap**: `space-y-4` - Between related elements
+---
 
-## Components
+## Tech Stack
 
-### Buttons
-- **Primary**: Default variant with primary colors
-- **Height**: `h-11` for consistency
-- **Text**: `text-base font-medium`
-- **Full Width**: `w-full` for forms
+* **Framework**: React 18 + TypeScript
+* **Styling**: CSS files (no CSS-in-JS or styled-components)
+* **Routing**: React Router
+* **Build Tool**: Vite
+* **UI Components**: Custom, Tailwind-inspired utility classes
+* **State Management**: React Context
+* **Backend**: Supabase (data + auth)
+* **Deployment**: Vercel
+* **Content**: Dynamically loaded from backend — no placeholder Figma text.
 
-### Cards
-- **Shadow**: `shadow-lg` for depth
-- **Border**: `border-border` using design tokens
-- **Header**: `space-y-2` for title and subtitle
+---
 
-### Form Elements
-- **Labels**: `text-sm font-medium text-foreground`
-- **Inputs**: `h-11` height, proper spacing
-- **Form Groups**: `space-y-2` between label and input
+#### **Figma to Code Workflow**
 
-### Links
-- **Color**: `text-primary`
-- **Hover**: `hover:text-primary/80`
-- **Transition**: `transition-colors`
+**Step 1: Analyze Figma Selection**
+```bash
+# Get current Figma selection details
+mcp__figma-dev-mode-mcp-server__get_code
+mcp__figma-dev-mode-mcp-server__get_image
+```
 
-## Layout Patterns
+**Step 2: Map to Global Classes**
+```tsx
+// ✅ Good - Use global typography classes
+<h1 className="text-sb-14 text-white letter-spacing-wide">
+// ❌ Bad - Don't create new font classes for existing fonts
+<h1 className="custom-title-font">
+```
 
-### Authentication Pages
-- **Container**: `min-h-screen flex items-center justify-center bg-background`
-- **Form Width**: `max-w-md w-full`
-- **Page Spacing**: `space-y-8`
+**Step 3: Component CSS for Layout Only**
+```css
+/* ✅ Good - Layout extracted from Figma */
+.figma-component-web {
+  flex: 0 0 820px;  /* From Figma: flex="0 0 820px" */
+  gap: 50px;        /* From Figma: gap-[50px] */
+  min-width: 215.5px; /* From Figma: min-w-[215.5px] */
+}
 
-### Content Pages
-- **Main Container**: Use design system backgrounds
-- **Content Width**: Responsive max-width containers
-- **Consistent Padding**: Apply uniform spacing
+/* ❌ Bad - Don't add typography to component CSS */
+.figma-component-web h1 {
+  font-family: 'Inter';
+  font-size: 40px;
+}
+```
 
-## Implementation Rules
+When creating new components:
 
-1. **Always use design tokens** instead of arbitrary colors
-2. **Maintain consistent spacing** using the defined scale
-3. **Apply proper typography hierarchy** with defined classes
-4. **Use semantic color names** (primary, muted, etc.)
-5. **Ensure proper contrast** between text and backgrounds
-6. **Implement hover states** with appropriate transitions
-7. **Maintain component consistency** across all pages
+1. Use **global typography** and **color classes**.
+2. Create **component-specific CSS** for **layout only**.
+3. Never add font, color, or text styling to component CSS.
+
+**Example (✅ Good):**
+
+```tsx
+<div className="card-container">
+  <h2 className="text-sb-16 text-primary">Card Title</h2>
+  <p className="text-r-14 text-primary-70">Card content</p>
+</div>
+```
+
+```css
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--bg-container);
+  border-radius: 8px;
+  border: 1px solid var(--color-stroke-g);
+}
+```
+
+---
+
+## ❌ Avoid These Patterns
+
+```tsx
+// Bad: Inline font styles
+<h2 style={{ fontSize: '16px', fontWeight: 600, fontFamily: 'Inter' }}>Title</h2>
+
+// Bad: Component CSS with typography
+.card-title {
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 16px;
+}
+```
+
+---
+
+## Figma Integration Rules
+
+1. **Extract exact values from Figma** (widths, paddings, gaps, breakpoints).
+2. **Follow Figma breakpoints exactly** — no custom breakpoints.
+3. **Preserve flex/grid behavior** exactly as in design.
+
+**Example:**
+
+```css
+/* Mobile default */
+.layout-mobile { display: flex; }
+
+/* Desktop from Figma's breakpoint */
+@media (min-width: 1440px) {
+  .layout-mobile { display: none; }
+  .layout-desktop { display: flex; }
+}
+```
+
+---
+
+## Allowed vs Forbidden Properties in Component CSS
+
+✅ **Allowed**:
+`display`, `flex-direction`, `justify-content`, `align-items`,
+`gap`, `padding`, `margin`,
+`width`, `height`, `max-width`, `min-height`,
+`position`, `top`, `left`, `right`, `bottom`,
+`border-radius`, `border-width`, `border-style`,
+`background-color`, `background-image`,
+`transform`, `transition`,
+`z-index`, `overflow`,
+`object-fit`, `object-position`
+
+❌ **Forbidden**:
+`font-family`, `font-size`, `font-weight`, `font-style`,
+`color`, `text-color`,
+`line-height`, `letter-spacing`,
+`text-align`, `text-decoration`,
+`text-shadow`, `text-transform`
+
+---
+
+## Testing Before Commit
+
+* Search for `style={` in `.tsx` files (should only be for dynamic values).
+* Verify all text uses a global typography class.
+* Test responsive breakpoints exactly as per Figma.
+* No hardcoded hex colors — use CSS variables.
