@@ -1,19 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --background: 0 0% 100%;                    /* FFFEFA - Background Default */
+    --background-container: 0 0% 99.6%;        /* FFFBF2 - Background Container */
+    --foreground: 0 0% 9%;                      /* 171717 - Text Primary */
+    --primary: 45 89% 42%;                      /* D7AC00 - Text Secondary (golden) */
+    --primary-foreground: 0 0% 100%;            /* White text on primary */
+    --secondary: 0 0% 97%;                      /* F7F4EE - Text Background */
+    --secondary-foreground: 0 0% 9%;            /* 171717 - Text on secondary */
+    --muted: 0 0% 96%;                          /* F7F4EE - Muted background */
+    --muted-foreground: 0 0% 45%;               /* Gray text */
+    --border: 0 0% 94.5%;                       /* F1F1F1 - Stroke G */
+    --input: 0 0% 94.5%;                        /* F1F1F1 - Input borders */
+    --accent: 48 89% 75%;                       /* F6EBBF - Stroke Y */
   }
 
   .dark {
@@ -36,5 +40,57 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+@layer components {
+  /* Typography Utilities */
+  .text-sb-16 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 600; 
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .text-r-16 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 400; 
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .text-sb-14 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 600; 
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .text-r-14 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 400; 
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .text-sb-12 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 600; 
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .text-r-12 { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important; 
+    font-weight: 400; 
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

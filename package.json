@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "save": "git add . && git commit -m \"Save progress: $(date '+%Y-%m-%d %H:%M')\" && git push",
+    "quick": "git add . && git commit -m \"Quick update\" && git push",
+    "commit": "git add . && git commit",
+    "sync": "git pull && git add . && git commit -m \"Sync: $(date '+%Y-%m-%d %H:%M')\" && git push",
+    "deploy": "npm run build && npm run save",
+    "restart": "lsof -ti:3000 | xargs kill -9 && npm start"
   },
   "dependencies": {
     "next": "14.2.0",
