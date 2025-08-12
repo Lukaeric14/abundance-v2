@@ -1,9 +1,18 @@
+"use client"
 import './TeacherView.css'
+import { useState } from 'react'
 
 const imgAvatarOfTeacherCartoon = "http://localhost:3845/assets/ad01a6641c76cff56de1d4a5dd942885df62bb80.png";
-const imgFrame14 = "http://localhost:3845/assets/ca2454b2a62c0d67707d892390c722de77e1b02f.svg";
 
-export default function TeacherView() {
+export interface ChatMessageLite {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export default function TeacherView({ projectTitle, chat }: { projectTitle?: string; chat?: ChatMessageLite[] }) {
+  const [objectiveCollapsed, setObjectiveCollapsed] = useState<boolean>(false)
+  const [stepsCollapsed, setStepsCollapsed] = useState<boolean>(false)
+  const [dataCollapsed, setDataCollapsed] = useState<boolean>(false)
   return (
     <div className="teacher-view">
       {/* Top Bar */}
@@ -23,12 +32,9 @@ export default function TeacherView() {
             <div className="internal-tag">
               <div className="text-sb-12 internal-text">Internal</div>
             </div>
-            <div className="dropdown-arrow">
-              <img alt="" src={imgFrame14} />
-            </div>
           </div>
           <div className="text-sb-12 breadcrumb-separator">/</div>
-          <div className="text-sb-12 breadcrumb-text">Real Estate & Fractions Project</div>
+          <div className="text-sb-12 breadcrumb-text">{projectTitle ?? 'Untitled Project'}</div>
         </div>
         <div className="buttons-container">
           <div className="save-project-btn">
@@ -47,30 +53,28 @@ export default function TeacherView() {
           <div className="chat-content">
             {/* Chat Message */}
             <div className="chat-messages">
-              <div className="user-message">
-                <div className="text-r-12">Real Estate project for 3 students teaching fractions</div>
-              </div>
+              {(chat ?? []).map((m, idx) => (
+                m.role === 'user' ? (
+                  <div key={idx} className="user-message">
+                    <div className="text-r-12">{m.content}</div>
+                  </div>
+                ) : (
+                  <div key={idx} className="project-description">
+                    <div className="abundance-icon-small">
+                      <div className="icon-bar icon-bar-1" />
+                      <div className="icon-bar icon-bar-2" />
+                      <div className="icon-bar icon-bar-3" />
+                      <div className="icon-bar icon-bar-4" />
+                      <div className="icon-bar icon-bar-5" />
+                      <div className="icon-bar icon-bar-6" />
+                    </div>
+                    <div className="text-r-12">{m.content}</div>
+                  </div>
+                )
+              ))}
             </div>
             
-            {/* Project Description */}
-            <div className="project-description">
-              <div className="abundance-icon-small">
-                <div className="icon-bar icon-bar-1" />
-                <div className="icon-bar icon-bar-2" />
-                <div className="icon-bar icon-bar-3" />
-                <div className="icon-bar icon-bar-4" />
-                <div className="icon-bar icon-bar-5" />
-                <div className="icon-bar icon-bar-6" />
-              </div>
-              <div className="text-r-12">
-                This project aims to engage three students in a hands-on real estate exercise that incorporates the
-                concept of fractions. By simulating property transactions, students will learn to calculate areas,
-                determine property values, and understand how fractions play a crucial role in real estate
-                measurements. The exercise will not only enhance their mathematical skills but also provide practical
-                insights into the real estate market, fostering teamwork and critical thinking as they collaborate on
-                their project.
-              </div>
-            </div>
+            {/* End Chat Messages */}
           </div>
           
           {/* Chat Input */}
@@ -105,20 +109,38 @@ export default function TeacherView() {
                   <div className="text-r-14">JK</div>
                 </div>
               </div>
+              {/* Objective collapsed bar when minimized */}
+              {objectiveCollapsed && (
+                <button
+                  type="button"
+                  className="collapsed-bar collapsed-wide"
+                  onClick={() => setObjectiveCollapsed(false)}
+                >
+                  <span className="text-sb-14">Objective</span>
+                  <span className="chevron">▾</span>
+                </button>
+              )}
             </div>
 
             {/* Objective Section */}
-            <div className="objective-section">
-              <div className="text-sb-16">Objective</div>
-            </div>
+            {!objectiveCollapsed && (
+              <div className="objective-section section-card">
+                <button className="toggle-abs" onClick={() => setObjectiveCollapsed(true)} aria-label="Collapse objective">▴</button>
+                <div className="text-sb-14 card-title">Objective</div>
+              </div>
+            )}
 
             {/* Steps and Data Row */}
             <div className="bottom-row">
-              <div className="steps-section">
-                <div className="text-sb-16">Steps</div>
+              <div className="steps-section section-card">
+                <button className="toggle-abs" onClick={() => setStepsCollapsed(v => !v)} aria-label="Toggle steps">{stepsCollapsed ? '▾' : '▴'}</button>
+                <div className="text-sb-14 card-title">Steps</div>
+                {!stepsCollapsed && (<div className="card-body" />)}
               </div>
-              <div className="data-section">
-                <div className="text-sb-16">Data</div>
+              <div className="data-section section-card">
+                <button className="toggle-abs" onClick={() => setDataCollapsed(v => !v)} aria-label="Toggle data">{dataCollapsed ? '▾' : '▴'}</button>
+                <div className="text-sb-14 card-title">Data</div>
+                {!dataCollapsed && (<div className="card-body" />)}
               </div>
             </div>
           </div>
