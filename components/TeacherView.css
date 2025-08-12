@@ -294,8 +294,8 @@
 }
 
 .teacher-avatar {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   border: 1px solid var(--color-stroke-g);
   background-color: #FFE100;
@@ -312,8 +312,8 @@
 }
 
 .student-avatar {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   border: 1px solid var(--color-stroke-g);
   background-color: var(--bg-default);
@@ -323,6 +323,10 @@
   margin-right: -7px;
   color: rgba(23, 23, 23, 0.6);
 }
+
+.avatar-btn { background: none; border: none; padding: 0; cursor: pointer; }
+.selected-avatar { outline: 2px solid var(--color-secondary); outline-offset: 0px; }
+.selected-student-label { margin: 0 10px; margin-left: 15px; }
 
 .objective-section {
   background-color: var(--bg-default);
