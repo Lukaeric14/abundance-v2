@@ -12,7 +12,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const { data: project } = await supabase
     .from('projects')
-    .select('id, title, spec_json, owner_email, created_at')
+    .select('id, title, spec_json, owner_email, created_at, group_size')
     .eq('id', params.id)
     .maybeSingle()
 
@@ -65,7 +65,33 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     chat = withoutControl
   }
 
-  return <TeacherView projectTitle={project?.title} chat={chat} />
+  // Initial sections for teacher preview via RPC
+  let initialSections: any[] = []
+  let allSections: any[] = []
+  if (project?.id) {
+    const [{ data: teacherData }, { data: allData }] = await Promise.all([
+      supabase.rpc('get_teacher_sections', { p_project_id: project.id }),
+      supabase
+        .from('sections')
+        .select('section_type, seat_number, content_text, order_index')
+        .eq('project_id', project.id)
+        .order('section_type')
+        .order('order_index'),
+    ])
+    initialSections = teacherData || []
+    allSections = allData || []
+  }
+
+  return (
+    <TeacherView
+      projectTitle={project?.title}
+      chat={chat}
+      initialSections={initialSections}
+      allSections={allSections}
+      groupSize={project?.group_size ?? 3}
+      projectId={project?.id}
+    />
+  )
 }
 
 

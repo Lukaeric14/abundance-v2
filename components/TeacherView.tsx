@@ -1,6 +1,6 @@
 "use client"
 import './TeacherView.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase/client'
 
 const imgAvatarOfTeacherCartoon = "http://localhost:3845/assets/ad01a6641c76cff56de1d4a5dd942885df62bb80.png";
@@ -10,35 +10,61 @@ export interface ChatMessageLite {
   content: string
 }
 
-export default function TeacherView({ projectTitle, chat }: { projectTitle?: string; chat?: ChatMessageLite[] }) {
+export default function TeacherView({ projectTitle, chat, initialSections = [], allSections = [], groupSize = 3, projectId }: { projectTitle?: string; chat?: ChatMessageLite[]; initialSections?: any[]; allSections?: any[]; groupSize?: number; projectId?: string }) {
   const [objectiveCollapsed, setObjectiveCollapsed] = useState<boolean>(false)
   const [stepsCollapsed, setStepsCollapsed] = useState<boolean>(false)
   const [dataCollapsed, setDataCollapsed] = useState<boolean>(false)
   const [activeViewer, setActiveViewer] = useState<'teacher' | 's1' | 's2' | 's3'>('teacher')
-  const [sections, setSections] = useState<any[]>([])
+  const [sections, setSections] = useState<any[]>(initialSections)
+  const cachedAllRef = useRef(allSections)
+  const chooseContent = (type: string): string => {
+    const specific = sections.find((s: any) => s.section_type === type && typeof s.seat_number === 'number' && s.seat_number > 0)
+    const shared = sections.find((s: any) => s.section_type === type && (s.seat_number === null || typeof s.seat_number === 'undefined'))
+    const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
+    // When viewing teacher, RPC already returns only seat 0. For students, prefer specific>shared
+    return (specific ?? shared ?? teacher)?.content_text || ''
+  }
 
   // PROTOTYPE: fetch via RPC per active viewer; falls back gracefully
+  // Use server API to avoid exposing client keys; no env required client-side
+
   useEffect(() => {
     const run = async () => {
       try {
-        const url = typeof window !== 'undefined' ? window.location.pathname : ''
-        const projectId = url.split('/project/')[1]?.split('/')[0]
         if (!projectId) return
-        const supabase = createBrowserSupabase()
-        if (activeViewer === 'teacher') {
-          const { data } = await supabase.rpc('get_teacher_sections', { p_project_id: projectId })
-          setSections(data || [])
-        } else {
-          const seat = activeViewer === 's1' ? 1 : activeViewer === 's2' ? 2 : 3
-          const { data } = await supabase.rpc('get_student_sections', { p_project_id: projectId, p_seat: seat })
-          setSections(data || [])
+        const payload =
+          activeViewer === 'teacher'
+            ? { projectId, role: 'teacher' }
+            : { projectId, role: 'student', seat: activeViewer === 's1' ? 1 : activeViewer === 's2' ? 2 : 3 }
+
+        // Try local cache first
+        const seat = payload.role === 'student' ? (payload as any).seat : 0
+        const cached = cachedAllRef.current.filter((s: any) => {
+          if (seat === 0) return s.seat_number === 0
+          return s.seat_number === null || s.seat_number === seat
+        })
+        if (cached.length > 0) {
+          setSections(cached)
+          return
+        }
+
+        const res = await fetch('/api/sections', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const json = await res.json()
+        if (res.ok && Array.isArray(json.sections)) {
+          setSections(json.sections)
+          // merge into cache
+          cachedAllRef.current = [...cachedAllRef.current, ...json.sections]
         }
       } catch {
-        setSections([])
+        // keep previous sections on error to avoid flicker
       }
     }
     run()
-  }, [activeViewer])
+  }, [activeViewer, projectId])
   return (
     <div className="teacher-view">
       {/* Top Bar */}
@@ -137,21 +163,29 @@ export default function TeacherView({ projectTitle, chat }: { projectTitle?: str
                 {activeViewer === 's1' && (
                   <div className="text-sb-14 selected-student-label">Student 1</div>
                 )}
-                <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s2')}>
-                  <div className={`student-avatar ${activeViewer === 's2' ? 'selected-avatar' : ''}`}>
-                    <div className="text-r-14">SI</div>
-                  </div>
-                </button>
-                {activeViewer === 's2' && (
-                  <div className="text-sb-14 selected-student-label">Student 2</div>
+                {groupSize >= 2 && (
+                  <>
+                    <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s2')}>
+                      <div className={`student-avatar ${activeViewer === 's2' ? 'selected-avatar' : ''}`}>
+                        <div className="text-r-14">SI</div>
+                      </div>
+                    </button>
+                    {activeViewer === 's2' && (
+                      <div className="text-sb-14 selected-student-label">Student 2</div>
+                    )}
+                  </>
                 )}
-                <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s3')}>
-                  <div className={`student-avatar ${activeViewer === 's3' ? 'selected-avatar' : ''}`}>
-                    <div className="text-r-14">JK</div>
-                  </div>
-                </button>
-                {activeViewer === 's3' && (
-                  <div className="text-sb-14 selected-student-label">Student 3</div>
+                {groupSize >= 3 && (
+                  <>
+                    <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s3')}>
+                      <div className={`student-avatar ${activeViewer === 's3' ? 'selected-avatar' : ''}`}>
+                        <div className="text-r-14">JK</div>
+                      </div>
+                    </button>
+                    {activeViewer === 's3' && (
+                      <div className="text-sb-14 selected-student-label">Student 3</div>
+                    )}
+                  </>
                 )}
               </div>
               {/* Objective collapsed bar when minimized */}
@@ -172,6 +206,9 @@ export default function TeacherView({ projectTitle, chat }: { projectTitle?: str
               <div className="objective-section section-card">
                 <button className="toggle-abs" onClick={() => setObjectiveCollapsed(true)} aria-label="Collapse objective">▴</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Objective' : `Objective — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
+                <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
+                  {chooseContent('objective')}
+                </div>
               </div>
             )}
 
@@ -180,12 +217,24 @@ export default function TeacherView({ projectTitle, chat }: { projectTitle?: str
               <div className="steps-section section-card">
                 <button className="toggle-abs" onClick={() => setStepsCollapsed(v => !v)} aria-label="Toggle steps">{stepsCollapsed ? '▾' : '▴'}</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Steps' : `Steps — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
-                {!stepsCollapsed && (<div className="card-body" />)}
+                {!stepsCollapsed && (
+                  <div className="card-body">
+                    <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
+                      {chooseContent('steps')}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="data-section section-card">
                 <button className="toggle-abs" onClick={() => setDataCollapsed(v => !v)} aria-label="Toggle data">{dataCollapsed ? '▾' : '▴'}</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Data' : `Data — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
-                {!dataCollapsed && (<div className="card-body" />)}
+                {!dataCollapsed && (
+                  <div className="card-body">
+                    <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
+                      {chooseContent('data')}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

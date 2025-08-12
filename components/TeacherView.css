@@ -336,8 +336,10 @@
   min-height: 260px;
   flex: 0 0 260px; /* fixed top block */
   display: flex;
+  flex-direction: column; /* stack title and body vertically */
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 8px;
   padding: 10px;
   color: var(--color-primary);
 }
