@@ -18,6 +18,17 @@
     --border: 0 0% 94.5%;                       /* F1F1F1 - Stroke G */
     --input: 0 0% 94.5%;                        /* F1F1F1 - Input borders */
     --accent: 48 89% 75%;                       /* F6EBBF - Stroke Y */
+
+    /* Direct color values for component usage */
+    --color-primary: #171717;                   /* Primary text */
+    --color-primary-60: rgba(23, 23, 23, 0.6); /* Primary 60% opacity */
+    --color-primary-70: rgba(23, 23, 23, 0.7); /* Primary 70% opacity */
+    --color-secondary: #D7AC00;                 /* Golden accent */
+    --color-stroke-y: #F6EBBF;                  /* Yellow stroke */
+    --color-stroke-g: #F1F1F1;                  /* Gray stroke */
+    --bg-default: #FFFEFA;                      /* Default background */
+    --bg-container: #FFFBF2;                    /* Container background */
+    --text-bg: #F7F4EE;                         /* Text background */
   }
 
   .dark {
