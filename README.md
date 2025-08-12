@@ -100,3 +100,23 @@ The chat builder interface is ready for development. Key areas to expand:
 - Real-time collaboration features
 - Custom themes and styling options
 - Export and deployment capabilities
+
+## Supabase participants/sections migrations
+
+Commands to apply migrations and optionally seed:
+
+```bash
+# create migrations (already added by PR)
+supabase migration new add_participants_sections
+supabase migration new add_sections_rpcs
+
+# apply to local
+supabase db reset   # or: supabase db push
+
+# generate types (optional)
+supabase gen types typescript --local > src/types/supabase.ts
+
+# optional: seed
+# edit supabase/seed.sql and set :project_id
+supabase db reset --seed
+```
