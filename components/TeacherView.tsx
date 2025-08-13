@@ -2,6 +2,7 @@
 import './TeacherView.css'
 import { useEffect, useRef, useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 const imgAvatarOfTeacherCartoon = "http://localhost:3845/assets/ad01a6641c76cff56de1d4a5dd942885df62bb80.png";
 
@@ -10,19 +11,41 @@ export interface ChatMessageLite {
   content: string
 }
 
-export default function TeacherView({ projectTitle, chat, initialSections = [], allSections = [], groupSize = 3, projectId }: { projectTitle?: string; chat?: ChatMessageLite[]; initialSections?: any[]; allSections?: any[]; groupSize?: number; projectId?: string }) {
+export default function TeacherView({ projectTitle, chat, initialSections = [], allSections = [], groupSize = 3, projectId, projectStatus = 'unknown', runId }: { projectTitle?: string; chat?: ChatMessageLite[]; initialSections?: any[]; allSections?: any[]; groupSize?: number; projectId?: string; projectStatus?: string; runId?: string }) {
+  const router = useRouter()
   const [objectiveCollapsed, setObjectiveCollapsed] = useState<boolean>(false)
   const [stepsCollapsed, setStepsCollapsed] = useState<boolean>(false)
   const [dataCollapsed, setDataCollapsed] = useState<boolean>(false)
   const [activeViewer, setActiveViewer] = useState<'teacher' | 's1' | 's2' | 's3'>('teacher')
   const [sections, setSections] = useState<any[]>(initialSections)
+  
+  // Update sections when initialSections changes
+  useEffect(() => {
+    setSections(initialSections)
+    console.log('TeacherView: initialSections updated, count =', initialSections.length)
+    if (initialSections.length > 0) {
+      console.log('TeacherView: sample section content =', initialSections[0]?.content_text?.substring(0, 50) + '...')
+    }
+  }, [initialSections])
+  const [isGenerating, setIsGenerating] = useState(projectStatus === 'generating')
+  
+  // Update generating state when projectStatus changes
+  useEffect(() => {
+    setIsGenerating(projectStatus === 'generating')
+    console.log('TeacherView: projectStatus =', projectStatus, 'isGenerating =', projectStatus === 'generating')
+  }, [projectStatus])
   const cachedAllRef = useRef(allSections)
   const chooseContent = (type: string): string => {
+    console.log(`TeacherView chooseContent: type=${type}, activeViewer=${activeViewer}, sections.length=${sections.length}`)
     const specific = sections.find((s: any) => s.section_type === type && typeof s.seat_number === 'number' && s.seat_number > 0)
     const shared = sections.find((s: any) => s.section_type === type && (s.seat_number === null || typeof s.seat_number === 'undefined'))
     const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
+    
+    const chosen = specific ?? shared ?? teacher
+    console.log(`TeacherView chooseContent: chosen section for ${type}:`, chosen)
+    
     // When viewing teacher, RPC already returns only seat 0. For students, prefer specific>shared
-    return (specific ?? shared ?? teacher)?.content_text || ''
+    return chosen?.content_text || ''
   }
 
   const findSectionId = (type: string): string | undefined => {
@@ -85,19 +108,36 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
     }
     run()
   }, [activeViewer, projectId])
+
+  // Poll for project completion when generating
+  useEffect(() => {
+    if (!isGenerating || !projectId) return
+
+    const pollInterval = setInterval(async () => {
+      try {
+        // Refresh the page to get updated project data
+        window.location.reload()
+      } catch (error) {
+        console.error('Error checking project status:', error)
+      }
+    }, 5000) // Poll every 5 seconds
+
+    return () => clearInterval(pollInterval)
+  }, [isGenerating, projectId])
+
   return (
     <div className="teacher-view">
       {/* Top Bar */}
       <div className="topbar">
         <div className="breadcrumb-container">
-          <div className="abundance-icon">
+          <button type="button" className="abundance-icon" onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
             <div className="icon-bar icon-bar-1" />
             <div className="icon-bar icon-bar-2" />
             <div className="icon-bar icon-bar-3" />
             <div className="icon-bar icon-bar-4" />
             <div className="icon-bar icon-bar-5" />
             <div className="icon-bar icon-bar-6" />
-          </div>
+          </button>
           <div className="text-sb-12 breadcrumb-separator">/</div>
           <div className="breadcrumb-section">
             <div className="text-sb-12 breadcrumb-text">Numbers</div>
@@ -160,6 +200,37 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
 
         {/* Project Container - Right Side */}
         <div className="project-container">
+          {isGenerating && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10,
+              gap: '16px'
+            }}>
+              <div style={{ 
+                width: '40px', 
+                height: '40px', 
+                border: '3px solid #f0f0f0', 
+                borderTop: '3px solid #D7AC00',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <div className="text-sb-14" style={{ color: '#666' }}>
+                Generating your project...
+              </div>
+              <div className="text-r-12" style={{ color: '#999', textAlign: 'center', maxWidth: '300px' }}>
+                This may take up to 30 seconds. The page will refresh automatically when complete.
+              </div>
+            </div>
+          )}
           <div className="project-content">
             {/* Header with Teacher and Students */}
             <div className="project-header">
