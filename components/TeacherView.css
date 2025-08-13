@@ -360,6 +360,7 @@
 }
 
 .card-body { flex: 1; }
+.card-body.editable { cursor: text; }
 
 .bottom-row {
   display: flex;
@@ -398,6 +399,7 @@
   align-items: center;
 }
 .collapsed-wide { flex: 1; margin-left: 16px; margin-right: 0; }
+.collapsed-text { max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .chevron { margin-left: 4px; }
 

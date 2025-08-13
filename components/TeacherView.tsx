@@ -25,6 +25,26 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
     return (specific ?? shared ?? teacher)?.content_text || ''
   }
 
+  const findSectionId = (type: string): string | undefined => {
+    const specific = sections.find((s: any) => s.section_type === type && typeof s.seat_number === 'number' && s.seat_number > 0)
+    const shared = sections.find((s: any) => s.section_type === type && (s.seat_number === null || typeof s.seat_number === 'undefined'))
+    const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
+    return (specific ?? shared ?? teacher)?.id
+  }
+
+  async function save(type: 'objective' | 'steps' | 'data', text: string) {
+    const id = findSectionId(type)
+    if (!id) return
+    await fetch('/api/sections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ update: { id, content_text: text } }),
+    })
+    // Update local cache
+    setSections(prev => prev.map((s: any) => (s.id === id ? { ...s, content_text: text } : s)))
+    cachedAllRef.current = cachedAllRef.current.map((s: any) => (s.id === id ? { ...s, content_text: text } : s))
+  }
+
   // PROTOTYPE: fetch via RPC per active viewer; falls back gracefully
   // Use server API to avoid exposing client keys; no env required client-side
 
@@ -194,8 +214,9 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
                   type="button"
                   className="collapsed-bar collapsed-wide"
                   onClick={() => setObjectiveCollapsed(false)}
+                  title="Click to expand Objective"
                 >
-                  <span className="text-sb-14">Objective</span>
+                  <span className="text-r-14 collapsed-text">{chooseContent('objective') || 'Objective'}</span>
                   <span className="chevron">▾</span>
                 </button>
               )}
@@ -206,9 +227,10 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
               <div className="objective-section section-card">
                 <button className="toggle-abs" onClick={() => setObjectiveCollapsed(true)} aria-label="Collapse objective">▴</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Objective' : `Objective — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
-                <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
-                  {chooseContent('objective')}
-                </div>
+                <EditableArea
+                  initialValue={chooseContent('objective')}
+                  onSave={(t) => save('objective', t)}
+                />
               </div>
             )}
 
@@ -218,22 +240,20 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
                 <button className="toggle-abs" onClick={() => setStepsCollapsed(v => !v)} aria-label="Toggle steps">{stepsCollapsed ? '▾' : '▴'}</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Steps' : `Steps — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
                 {!stepsCollapsed && (
-                  <div className="card-body">
-                    <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
-                      {chooseContent('steps')}
-                    </div>
-                  </div>
+                  <EditableArea
+                    initialValue={chooseContent('steps')}
+                    onSave={(t) => save('steps', t)}
+                  />
                 )}
               </div>
               <div className="data-section section-card">
                 <button className="toggle-abs" onClick={() => setDataCollapsed(v => !v)} aria-label="Toggle data">{dataCollapsed ? '▾' : '▴'}</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Data' : `Data — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
                 {!dataCollapsed && (
-                  <div className="card-body">
-                    <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
-                      {chooseContent('data')}
-                    </div>
-                  </div>
+                  <EditableArea
+                    initialValue={chooseContent('data')}
+                    onSave={(t) => save('data', t)}
+                  />
                 )}
               </div>
             </div>
@@ -242,4 +262,32 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
       </div>
     </div>
   );
+}
+
+function EditableArea({ initialValue, onSave }: { initialValue: string; onSave: (text: string) => void }) {
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState(initialValue)
+  useEffect(() => setValue(initialValue), [initialValue])
+
+  return (
+    <div className={"card-body editable"} onClick={() => setEditing(true)}>
+      {editing ? (
+        <textarea
+          className="text-r-14"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={() => {
+            setEditing(false)
+            if (value !== initialValue) onSave(value)
+          }}
+          autoFocus
+          style={{ width: '100%', height: '100%', minHeight: 120, resize: 'vertical', outline: 'none', background: 'transparent', whiteSpace: 'pre-wrap', padding: 10 }}
+        />
+      ) : (
+        <div className="text-r-14" style={{ padding: 10, whiteSpace: 'pre-wrap' }}>
+          {value || ''}
+        </div>
+      )}
+    </div>
+  )
 }
