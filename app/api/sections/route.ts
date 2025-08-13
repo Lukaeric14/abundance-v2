@@ -5,7 +5,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  const { projectId, role, seat } = await req.json().catch(() => ({}))
+  const { projectId, role, seat, update } = await req.json().catch(() => ({}))
+  if (update?.id) {
+    const supabase = createClient()
+    const { error } = await supabase.from('sections').update({ content_text: update.content_text, updated_at: new Date().toISOString() }).eq('id', update.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   if (!projectId || !role) {
     return NextResponse.json({ error: 'Missing projectId or role' }, { status: 400 })
   }

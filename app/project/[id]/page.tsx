@@ -73,7 +73,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       supabase.rpc('get_teacher_sections', { p_project_id: project.id }),
       supabase
         .from('sections')
-        .select('section_type, seat_number, content_text, order_index')
+        .select('id, section_type, seat_number, content_text, order_index')
         .eq('project_id', project.id)
         .order('section_type')
         .order('order_index'),
