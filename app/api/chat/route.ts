@@ -48,11 +48,22 @@ export async function POST(req: NextRequest) {
       .insert({ chat_id: currentChatId, role: lastMessage.role, content: lastMessage.content })
   }
 
+  const openrouterKey = process.env.OPENROUTER_API_KEY
+  if (!openrouterKey) {
+    return NextResponse.json({ error: 'Missing OPENROUTER_API_KEY' }, { status: 500 })
+  }
+
   const llm = new ChatOpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY!,
+    apiKey: openrouterKey,
     model: process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini',
     temperature: 0.3,
-    configuration: { baseURL: 'https://openrouter.ai/api/v1' },
+    configuration: {
+      baseURL: 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+        'X-Title': 'Abundance',
+      },
+    },
   })
 
   const system = new SystemMessage(
