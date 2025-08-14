@@ -3,6 +3,8 @@ import './TeacherView.css'
 import { useEffect, useRef, useState } from 'react'
 import { createBrowserSupabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Steps, { StepData } from './ui/Steps'
+import ObjectiveComponent from './ui/ObjectiveComponent'
 
 const imgAvatarOfTeacherCartoon = "http://localhost:3845/assets/ad01a6641c76cff56de1d4a5dd942885df62bb80.png";
 
@@ -54,6 +56,106 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
     const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
     return (specific ?? shared ?? teacher)?.id
   }
+
+  const parseStepsContent = (stepsText: string): StepData[] => {
+    if (!stepsText) return getDefaultSteps()
+    
+    // If the content appears to be [object Object], it might be structured data
+    if (stepsText.includes('[object Object]')) {
+      return getDefaultSteps()
+    }
+    
+    try {
+      // Try to parse as JSON first
+      const parsed = JSON.parse(stepsText)
+      if (Array.isArray(parsed)) {
+        return parsed.map((step, index) => ({
+          id: step.id || (index + 1).toString(),
+          title: step.title || `Step ${index + 1}`,
+          description: step.description || '',
+          duration: step.duration || '5mins',
+          status: step.status || (index === 0 ? 'completed' : index === 1 ? 'active' : 'pending')
+        }))
+      }
+    } catch {
+      // Not JSON, try text parsing
+    }
+    
+    // Split by lines and filter out empty lines
+    const lines = stepsText.split('\n').filter(line => line.trim() && !line.includes('[object Object]'))
+    const steps: StepData[] = []
+    
+    lines.forEach((line, index) => {
+      // Look for numbered steps pattern like "1. Title - Description (duration)"
+      const match = line.match(/^(\d+)\.\s*(.+?)\s*-\s*(.+?)\s*\((\d+mins?)\)/)
+      if (match) {
+        const [, num, title, description, duration] = match
+        steps.push({
+          id: num,
+          title: title.trim(),
+          description: description.trim(),
+          duration: duration,
+          status: index === 0 ? 'completed' : index === 1 ? 'active' : 'pending'
+        })
+      } else if (line.trim().length > 0) {
+        // Fallback: treat each line as a step
+        steps.push({
+          id: (index + 1).toString(),
+          title: line.trim(),
+          description: '',
+          duration: '5mins',
+          status: index === 0 ? 'completed' : index === 1 ? 'active' : 'pending'
+        })
+      }
+    })
+    
+    return steps.length > 0 ? steps : getDefaultSteps()
+  }
+
+  const getDefaultSteps = (): StepData[] => [
+      {
+        id: '1',
+        title: 'Research Phase',
+        description: '1. Conduct a thorough analysis of the water duct requirements and regulations.',
+        duration: '5mins',
+        status: 'completed'
+      },
+      {
+        id: '2',
+        title: 'Discovery Phase',
+        description: '2. Develop a comprehensive design plan that meets all necessary specifications.',
+        duration: '10mins',
+        status: 'active'
+      },
+      {
+        id: '3',
+        title: 'Planning Phase',
+        description: '3. Assign team members specific tasks related to the design and implementation.',
+        duration: '3mins',
+        status: 'pending'
+      },
+      {
+        id: '4',
+        title: 'Design Phase',
+        description: '4. Create a detailed presentation to showcase the design to government representatives.',
+        duration: '10mins',
+        status: 'pending'
+      },
+      {
+        id: '5',
+        title: 'Testing Phase',
+        description: '5. Arrange meetings with local authorities to discuss project approvals.',
+        duration: '8mins',
+        status: 'pending'
+      },
+      {
+        id: '6',
+        title: 'Presentation Phase',
+        description: '6. Finalize all contracts and ensure compliance with legal standards.',
+        duration: '10mins',
+        status: 'pending'
+      }
+    ]
 
   async function save(type: 'objective' | 'steps' | 'data', text: string) {
     const id = findSectionId(type)
@@ -294,29 +396,36 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
             </div>
 
             {/* Objective Section */}
-            {!objectiveCollapsed && (
-              <div className="objective-section section-card">
-                <button className="toggle-abs" onClick={() => setObjectiveCollapsed(true)} aria-label="Collapse objective">▴</button>
-                <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Objective' : `Objective — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
-                <EditableArea
-                  initialValue={chooseContent('objective')}
-                  onSave={(t) => save('objective', t)}
-                />
-              </div>
-            )}
+            <ObjectiveComponent 
+              projectOverview="Define the scope and goals of your classroom project"
+              userRole={activeViewer === 'teacher' ? 'Facilitate and guide student learning' : 'Collaborate with teammates to complete project tasks'}
+              userObjective={chooseContent('objective') || 'Complete project objectives through collaborative learning'}
+              isCollapsible={true}
+              isCollapsed={objectiveCollapsed}
+              onToggleCollapse={() => setObjectiveCollapsed(!objectiveCollapsed)}
+            />
 
             {/* Steps and Data Row */}
             <div className="bottom-row">
-              <div className="steps-section section-card">
-                <button className="toggle-abs" onClick={() => setStepsCollapsed(v => !v)} aria-label="Toggle steps">{stepsCollapsed ? '▾' : '▴'}</button>
-                <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Steps' : `Steps — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
-                {!stepsCollapsed && (
-                  <EditableArea
-                    initialValue={chooseContent('steps')}
-                    onSave={(t) => save('steps', t)}
+              {!stepsCollapsed && (
+                <div className="steps-standalone-wrapper">
+                  <Steps 
+                    steps={parseStepsContent(chooseContent('steps'))} 
+                    onCollapse={() => setStepsCollapsed(true)}
                   />
-                )}
-              </div>
+                </div>
+              )}
+              {stepsCollapsed && (
+                <button
+                  type="button"
+                  className="collapsed-bar"
+                  onClick={() => setStepsCollapsed(false)}
+                  title="Click to expand Steps"
+                >
+                  <span className="text-r-14 collapsed-text">Steps</span>
+                  <span className="chevron">▾</span>
+                </button>
+              )}
               <div className="data-section section-card">
                 <button className="toggle-abs" onClick={() => setDataCollapsed(v => !v)} aria-label="Toggle data">{dataCollapsed ? '▾' : '▴'}</button>
                 <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Data' : `Data — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
