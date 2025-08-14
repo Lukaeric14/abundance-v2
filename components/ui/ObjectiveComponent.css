@@ -1,0 +1,158 @@
+/* ObjectiveComponent - Layout Only CSS */
+
+.objective-component {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  width: 100%;
+}
+
+.objective-container {
+  flex-grow: 1;
+  height: auto;
+  min-height: 1px;
+  min-width: 1px;
+  position: relative;
+  background-color: var(--bg-default);
+  border-radius: 20px;
+  border: 1px solid var(--color-stroke-g);
+}
+
+.objective-container .objective-header {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px 10px 0 10px;
+  position: relative;
+}
+
+.objective-container .objective-header h1 {
+  color: var(--color-primary);
+  text-align: center;
+  flex-grow: 1;
+}
+
+.collapse-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 15.429px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-primary);
+  transition: transform 0.2s ease;
+}
+
+.collapse-button:hover {
+  opacity: 0.7;
+}
+
+.collapse-button.collapsed {
+  transform: rotate(-180deg);
+}
+
+.chevron-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10.709px;
+  height: 7.517px;
+}
+
+.objective-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 45px 10px;
+  width: 100%;
+}
+
+.field-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 45px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.field-section h2 {
+  color: var(--color-primary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.field-section p {
+  color: var(--color-primary);
+  text-align: left;
+  line-height: 1.5;
+  width: 100%;
+  min-width: 100%;
+}
+
+/* Collapsed Bar Styles */
+.collapsed-bar {
+  background-color: var(--bg-default);
+  border: 1px solid var(--color-stroke-g);
+  border-radius: 999px;
+  padding: 8px 12px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+}
+
+.collapsed-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: var(--color-primary);
+  text-align: left;
+}
+
+.chevron {
+  margin-left: 4px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .field-section {
+    padding: 0 25px;
+  }
+  
+  .objective-content {
+    padding: 25px 10px;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .field-section {
+    padding: 0 15px;
+  }
+  
+  .objective-content {
+    padding: 20px 10px;
+  }
+  
+  .objective-container .objective-header {
+    padding: 20px 10px 0 10px;
+  }
+}

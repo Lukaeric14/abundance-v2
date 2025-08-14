@@ -1,0 +1,180 @@
+/* Steps Container - Fixed width for teacherview */
+.steps-container {
+  width: 327px;
+  max-height: 100%;
+  background: var(--bg-default);
+  border: 1px solid var(--color-stroke-g);
+  border-radius: 20px;
+  padding: 30px 25px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.steps-header {
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.steps-header h2 {
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.steps-collapse-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--color-primary-70);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.steps-collapse-btn:hover {
+  color: var(--color-primary);
+  background: var(--text-bg);
+}
+
+/* Steps List */
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Hide scrollbar for webkit browsers */
+  -webkit-scrollbar: none;
+  /* Hide scrollbar for IE and Edge */
+  -ms-overflow-style: none;
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+}
+
+/* Individual Step Items */
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.step-item:last-child {
+  padding-bottom: 0;
+}
+
+/* Timeline Column */
+.step-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  padding-top: 2px;
+}
+
+/* Step Circles */
+.step-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-secondary);
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+/* Circle States */
+.step-circle.completed {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.step-circle.active {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.step-circle.pending {
+  background: transparent;
+  border-color: var(--color-secondary);
+}
+
+/* Connectors */
+.step-connector {
+  width: 1.5px;
+  background: var(--color-secondary);
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 24px;
+  z-index: 1;
+}
+
+/* Step Content */
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.step-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.step-title {
+  margin: 0;
+  line-height: 1.2;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.step-description {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--color-primary);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Text Colors Based on State */
+.step-item.completed .step-title,
+.step-item.completed .step-description {
+  color: var(--color-primary-70);
+}
+
+.step-item.active .step-title,
+.step-item.active .step-description {
+  color: var(--color-primary);
+}
+
+.step-item.pending .step-title,
+.step-item.pending .step-description {
+  color: var(--color-primary-70);
+}
+
+/* Completed Text Strikethrough */
+.completed-text {
+  text-decoration: line-through;
+  text-decoration-skip-ink: none;
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-primary-70);
+}
