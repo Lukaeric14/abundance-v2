@@ -32,13 +32,13 @@ export default function Steps({ steps, className = '', onCollapse }: StepsProps)
       </div>
       
       <div className="steps-list">
+        {/* Single continuous timeline line */}
+        <div className="timeline-line" />
+        
         {steps.map((step, index) => (
           <div key={step.id} className={`step-item ${step.status}`}>
             <div className="step-timeline">
               <div className={`step-circle ${step.status}`} />
-              {index < steps.length - 1 && (
-                <div className="step-connector" />
-              )}
             </div>
             <div className="step-content">
               <div className="step-title-row">
