@@ -1,0 +1,102 @@
+{
+  "schema_version": "proj.v1",
+  "run_id": "ab2d9de5-10c6-4ca9-a136-ba664a79817d",
+  "chat_id": "f0065cdd-5f97-4bcf-ad0e-55814221a084",
+  "status": "generating",
+  "meta": {
+    "grade_band": "6-8",
+    "topic": "Fintech",
+    "life_skill": "problem solving",
+    "group_size": 2,
+    "duration_min": 30,
+    "owner_email": "luka.eric.2000@gmail.com",
+    "uae_context": true
+  },
+  "plan": {
+    "blocklist_ok": true,
+    "sections": [
+      {
+        "id": "sec_01",
+        "name": "Fintech in Math: Simple Interest and Budgeting (UAE Context)",
+        "math_objective": "Students will model simple interest, discounts, and budgeting scenarios using percentages and decimals; interpret outcomes to inform decisions.",
+        "constraints": {
+          "time_min": 30,
+          "materials": [
+            "whiteboard or chart paper",
+            "markers",
+            "calculation cards",
+            "calculator (optional)",
+            "scenario cards tailored to UAE contexts"
+          ]
+        },
+        "success_criteria": [
+          {
+            "metric": "Accuracy of simple interest calculation (I = P × r × t)",
+            "target_op": ">=",
+            "target_value": 80
+          },
+          {
+            "metric": "Ability to compare total costs after discounts/fees in two fintech scenarios",
+            "target_op": ">=",
+            "target_value": 80
+          },
+          {
+            "metric": "Clear group reasoning with justification statements",
+            "target_op": ">=",
+            "target_value": 80
+          }
+        ],
+        "roles": [
+          "teacher",
+          "shared",
+          "seat_1",
+          "seat_2"
+        ]
+      }
+    ]
+  },
+  "sections": {
+    "sec_01": {
+      "teacher": {
+        "objective": "Lead a 30-minute mini-lesson introducing fintech concepts relevant to UAE Grade 6-8 math, focusing on simple interest, discounts, and budgeting; connect to everyday UAE examples (students budgeting for school trip, wallet balance, etc.).",
+        "steps": [
+          "Show UAE-relevant real-world scenario cards (e.g., budgeting for a school event and wallet balance).",
+          "Guide students through I = P × r × t calculation and A = P + I using AED currency in annual terms.",
+          "Have students compare two options with fees/charges and justify the more cost-effective choice in UAE context."
+        ],
+        "data": {}
+      },
+      "shared": {
+        "objective": "In small group, compare two fintech scenarios (e.g., wallet top-up with fees vs. promotional offer) and decide which yields lower total cost; justify using calculations and UAE context.",
+        "steps": [
+          "Read two scenarios and identify data needed for calculations.",
+          "Work collaboratively to compute results and decide which option is cheaper; prepare a brief justification."
+        ],
+        "data": {}
+      },
+      "seats": {
+        "1": {
+          "objective": "Student 1 will calculate simple interest for given P, r, t and explain the steps aloud.",
+          "steps": [
+            "Identify P, r, t from the scenario card.",
+            "Compute I = P × r × t and A = P + I; articulate steps aloud."
+          ],
+          "data": {}
+        },
+        "2": {
+          "objective": "Student 2 will analyze budgeting scenario including discounts and fees; compute final amount and justify the choice.",
+          "steps": [
+            "Set up numbers from the budgeting scenario.",
+            "Compute total cost including discounts/fees; compare options and justify selection."
+          ],
+          "data": {}
+        }
+      }
+    }
+  },
+  "validator": null,
+  "logs": {
+    "csv_url": null,
+    "events_replayable": false
+  }
+}
