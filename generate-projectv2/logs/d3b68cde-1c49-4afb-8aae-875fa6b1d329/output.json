@@ -1,0 +1,105 @@
+{
+  "schema_version": "proj.v1",
+  "run_id": "d3b68cde-1c49-4afb-8aae-875fa6b1d329",
+  "chat_id": "chat456",
+  "status": "generating",
+  "meta": {
+    "topic": "Fractions",
+    "life_skill": "Problem Solving",
+    "grade_band": "6-8",
+    "group_size": 3,
+    "duration_min": 45,
+    "owner_email": "test@example.com",
+    "age_appropriateness": "Middle school UAE context",
+    "region": "UAE",
+    "language": "English",
+    "standards_reference": "UAE Mathematics Curriculum - Fractions"
+  },
+  "plan": {
+    "blocklist_ok": true,
+    "sections": [
+      {
+        "id": "sec_frac_wordprob_01",
+        "name": "Fractions: Equivalence, Ordering, and Word Problems",
+        "math_objective": "Students will compare and order fractions, identify equivalent fractions, convert between mixed numbers and improper fractions, and solve 2–3 step word problems involving addition and subtraction of fractions with unlike denominators.",
+        "constraints": {
+          "time_min": 45,
+          "materials": [
+            "Fraction tiles (paper or digital)",
+            "Mini whiteboards and markers",
+            "Problem cards (word problems)",
+            "Practice worksheets"
+          ],
+          "setup_notes": "Arrange seats in a circle or small triangle; provide access to manipulatives and a shared whiteboard."
+        },
+        "success_criteria": [
+          {
+            "metric": "percent_groups_solutions_correct",
+            "target_op": ">=",
+            "target_value": 85
+          },
+          {
+            "metric": "percent_justify_steps",
+            "target_op": ">=",
+            "target_value": 80
+          }
+        ],
+        "roles": [
+          {
+            "name": "Facilitator",
+            "responsibility": "Lead discussion, manage time, pose probing questions"
+          },
+          {
+            "name": "Recorder",
+            "responsibility": "Document key steps and final answers on shared board"
+          },
+          {
+            "name": "Strategist",
+            "responsibility": "Ensure correct use of denominators and check for reasoning gaps"
+          }
+        ]
+      }
+    ]
+  },
+  "sections": {
+    "sec_frac_wordprob_01": {
+      "teacher": {
+        "name": "Lead Teacher",
+        "role": "Math Instructor",
+        "qualifications": [
+          "Licensed Math Teacher",
+          "Fractions Specialist"
+        ]
+      },
+      "shared": {
+        "learning_norms": [
+          "Turn-taking",
+          "Respectful questioning",
+          "Evidence-based justification"
+        ]
+      },
+      "seats": {
+        "1": {
+          "student_id": "S1",
+          "name": "Amal",
+          "role": "Facilitator"
+        },
+        "2": {
+          "student_id": "S2",
+          "name": "Khalid",
+          "role": "Recorder"
+        },
+        "3": {
+          "student_id": "S3",
+          "name": "Noor",
+          "role": "Strategist"
+        }
+      }
+    }
+  },
+  "validator": null,
+  "logs": {
+    "csv_url": null,
+    "events_replayable": false
+  }
+}
