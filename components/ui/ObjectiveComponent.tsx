@@ -52,17 +52,17 @@ const ObjectiveComponent: React.FC<ObjectiveComponentProps> = ({
         <div className="objective-content">
           <div className="field-section">
             <h2 className="text-sb-14">Project Overview</h2>
-            <p className="text-r-16">{projectOverview}</p>
+            <p className="text-r-14">{projectOverview}</p>
           </div>
           
           <div className="field-section">
             <h2 className="text-sb-14">Your Role</h2>
-            <p className="text-r-16">{userRole}</p>
+            <p className="text-r-14">{userRole}</p>
           </div>
           
           <div className="field-section">
             <h2 className="text-sb-14">Your Objective</h2>
-            <p className="text-r-16">{userObjective}</p>
+            <p className="text-r-14">{userObjective}</p>
           </div>
         </div>
       </div>

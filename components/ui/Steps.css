@@ -55,12 +55,24 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
   /* Hide scrollbar for webkit browsers */
   -webkit-scrollbar: none;
   /* Hide scrollbar for IE and Edge */
   -ms-overflow-style: none;
   /* Hide scrollbar for Firefox */
   scrollbar-width: none;
+}
+
+/* Single continuous timeline line */
+.timeline-line {
+  position: absolute;
+  left: 6px;
+  top: 18px;
+  bottom: 18px;
+  width: 1.5px;
+  background: var(--color-secondary);
+  z-index: 2;
 }
 
 /* Individual Step Items */
@@ -70,10 +82,23 @@
   gap: 12px;
   position: relative;
   padding-bottom: 24px;
+  border-radius: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+  z-index: 1;
 }
 
 .step-item:last-child {
-  padding-bottom: 0;
+  padding-bottom: 12px;
+}
+
+/* Active step background highlight */
+.step-item.active {
+  background-color: var(--text-bg);
+  z-index: 1;
 }
 
 /* Timeline Column */
@@ -92,9 +117,9 @@
   height: 12px;
   border-radius: 50%;
   border: 1.5px solid var(--color-secondary);
-  background: transparent;
+  background: var(--bg-default);
   position: relative;
-  z-index: 2;
+  z-index: 10;
 }
 
 /* Circle States */
@@ -109,20 +134,8 @@
 }
 
 .step-circle.pending {
-  background: transparent;
+  background: #FFFEFA;
   border-color: var(--color-secondary);
-}
-
-/* Connectors */
-.step-connector {
-  width: 1.5px;
-  background: var(--color-secondary);
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 24px;
-  z-index: 1;
 }
 
 /* Step Content */
