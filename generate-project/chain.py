@@ -1,7 +1,7 @@
 import time, uuid, json
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
-from config import OPENROUTER_API_KEY, OPENROUTER_MODEL
+from config import OPENAI_API_KEY, OPENAI_MODEL
 
 SYSTEM = """You are a curriculum designer for Grades 6–8 Math in the UAE.
 Return STRICT JSON ONLY matching the provided schema. No prose, no code fences.
@@ -38,7 +38,10 @@ REQUIRED EXACT SCHEMA:
     "sec_01": {
       "teacher": {
         "objective": "What the teacher needs to accomplish",
-        "steps": ["Step 1", "Step 2", "Step 3"],
+        "steps": [
+          {"stage_title": "Phase Name (Xmins)", "stage_text": "Detailed description of what to do in this phase"},
+          {"stage_title": "Phase Name (Xmins)", "stage_text": "Detailed description of what to do in this phase"}
+        ],
         "data": {}
       },
       "shared": {
@@ -69,10 +72,9 @@ CRITICAL: Each section MUST have teacher.objective, teacher.steps, shared.object
 
 def generate_project(topic, life_skill, grade_band, group_size, duration_min, owner_email, chat_id):
     llm = ChatOpenAI(
-        api_key=OPENROUTER_API_KEY, 
-        model=OPENROUTER_MODEL,
-        base_url="https://openrouter.ai/api/v1",
-        temperature=0.6
+        api_key=OPENAI_API_KEY, 
+        model=OPENAI_MODEL,
+        temperature=1.0
     )
     run_id = str(uuid.uuid4())
     user = {

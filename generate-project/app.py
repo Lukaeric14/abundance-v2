@@ -1,7 +1,7 @@
 import json, queue, threading
 from flask import Flask, request, Response, stream_with_context, abort
 from flask_cors import CORS
-from config import PORT, OPENROUTER_MODEL
+from config import PORT, OPENAI_MODEL
 from db import fetch_project_spec, upsert_spec
 from chain import generate_project
 from persist import merge_meta, persist_sections
@@ -38,7 +38,7 @@ def background_worker(project_id, payload):
     prompt_path = write_artifact(run_id, "prompt", {"topic": topic, "life_skill": life_skill})
     out_path = write_artifact(run_id, "output", generated)
     append_csv(run_id, {
-        "stage":"llm_generate","model":OPENROUTER_MODEL,"temperature":0.6,
+        "stage":"llm_generate","model":OPENAI_MODEL,"temperature":"default",
         "prompt_tokens": None,"completion_tokens": None,"cost_est": None,
         "decision_summary": f"Generated project in {elapsed:.2f}s",
         "input_path": prompt_path,"output_path": out_path,"warning":""
