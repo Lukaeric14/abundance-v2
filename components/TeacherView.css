@@ -418,12 +418,13 @@
   align-items: center;
 }
 .collapsed-wide { 
-  flex: 0 1 auto; 
-  max-width: calc(100% - 400px); 
+  flex: 1 1 0; 
+  min-width: 0;
+  max-width: 60%; 
   margin-left: 16px; 
-  margin-right: 0; 
+  margin-right: 16px; 
 }
-.collapsed-text { max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.collapsed-text { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .chevron { margin-left: 4px; }
 
