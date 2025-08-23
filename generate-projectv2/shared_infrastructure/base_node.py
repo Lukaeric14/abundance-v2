@@ -7,6 +7,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 from thought_logger import ThoughtLogger
+import env_loader  # noqa: F401  Ensure env is loaded globally for all nodes
 from data_structures import NodeResult, NodeState
 
 class BaseNode(ABC):
