@@ -1,18 +1,18 @@
 ## Abundance Projects — Project Overview
 
-Abundance is a Next.js app that helps educators generate classroom-ready, standards-aligned project experiences. It combines a secure web app (Supabase auth, server actions) with a backend microservice that composes project content using LLMs.
+Abundance is a Next.js app that helps educators generate classroom-ready, standards-aligned project experiences. It combines a secure web app (Supabase auth, server actions) with mock project data for demonstration purposes.
 
 ### Key points
 - **Web app**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Supabase (server-only auth)
 - **LLM orchestration**: LangChain + OpenAI
-- **Microservice**: Two implementations exist under `generate-project/` and `generate-projectv2/` (both are WIP; see below)
+- **Mock Data**: Project generation now uses static mock data from `data/mock-project.json` (microservices removed)
 - **Database**: Supabase Postgres with migrations in `supabase/migrations`
 
 ## Tech stack
 - **Frontend/App**: Next.js 14, React 18, TypeScript, Tailwind CSS
 - **Auth & data**: Supabase (`@supabase/ssr`, server-side only)
 - **AI**: LangChain core/openai packages
-- **Runtime**: Node.js for the app; Python for the microservice(s)
+- **Runtime**: Node.js for the app
 
 ## Repository structure (high level)
 ```text
@@ -51,7 +51,7 @@ generate-projectv2/      # Microservice v2 (node-based pipeline) — WIP
 ### API endpoints
 - `POST /api/chat`
   - Auth required (Supabase session).
-  - Persists chat messages, creates a `projects` row, and calls the microservice: `GENERATE_PROJECT_URL + /start`.
+  - Persists chat messages, creates a `projects` row with mock data from `data/mock-project.json`.
   - Expects the model to sometimes return an action JSON: `{"action":"generate_project","project":{...}}`.
 
 - `POST /api/sections`
@@ -64,28 +64,18 @@ Create `.env.local` in the repo root for the Next.js app:
 SUPABASE_URL=...           # from Supabase project
 SUPABASE_ANON_KEY=...      # anon key, used server-side only
 OPENAI_API_KEY=...         # used by /api/chat
-GENERATE_PROJECT_URL=http://localhost:8080  # where the microservice runs
 ```
 
-For the microservice(s), set environment variables per their docs (see below). Typical variables:
-- `OPENAI_API_KEY`, `DATABASE_URL`, optional `PORT`, and logging options.
+Mock project data is stored in `data/mock-project.json` and loaded automatically.
 
 ## Running locally
-1) App
 ```bash
 npm install
 npm run dev
 # http://localhost:3000
 ```
 
-2) Microservice (v1 example)
-```bash
-cd generate-project
-pip install -r requirements.txt
-python app.py   # serves on :8080 by default
-```
-
-Alternatively, use the Dockerfile under `generate-project/`.
+The app now uses mock data from `data/mock-project.json` instead of external microservices.
 
 ## Database & migrations
 - Supabase configuration in `supabase/config.toml`

@@ -1,0 +1,227 @@
+{
+  "objective": {
+    "title": "Real Estate Negotiation: A 2-Student Mini-Project",
+    "description": "Navigate a realistic real estate transaction from initial offer to closing, practicing negotiation skills, financial analysis, and contract understanding",
+    "context": "A real estate transaction between a first-time homebuyer and a motivated seller. Both parties need to understand market conditions, financing options, inspection processes, and negotiation strategies to reach a successful closing."
+  },
+  "phases": [
+    {
+      "id": "1",
+      "phase": "Market Research",
+      "title": "Market Analysis Phase", 
+      "description": "Research current market conditions and comparable property values",
+      "timeMinutes": 8,
+      "duration": "8mins",
+      "status": "completed"
+    },
+    {
+      "id": "2", 
+      "phase": "Initial Offer",
+      "title": "Offer Preparation",
+      "description": "Prepare and present initial purchase offer with terms and conditions",
+      "timeMinutes": 12,
+      "duration": "12mins", 
+      "status": "active"
+    },
+    {
+      "id": "3",
+      "phase": "Negotiation", 
+      "title": "Price Negotiation",
+      "description": "Negotiate price, terms, and contingencies between buyer and seller",
+      "timeMinutes": 10,
+      "duration": "10mins",
+      "status": "pending"
+    },
+    {
+      "id": "4",
+      "phase": "Due Diligence",
+      "title": "Inspection & Appraisal", 
+      "description": "Coordinate property inspection and mortgage appraisal processes",
+      "timeMinutes": 8,
+      "duration": "8mins",
+      "status": "pending"
+    },
+    {
+      "id": "5",
+      "phase": "Contract Finalization",
+      "title": "Final Contract Review",
+      "description": "Review and finalize purchase agreement with all negotiated terms", 
+      "timeMinutes": 7,
+      "duration": "7mins",
+      "status": "pending"
+    },
+    {
+      "id": "6",
+      "phase": "Closing",
+      "title": "Transaction Closing",
+      "description": "Complete the real estate transaction and transfer ownership",
+      "timeMinutes": 10,
+      "duration": "10mins", 
+      "status": "pending"
+    }
+  ],
+  "data": {
+    "property_details": {
+      "address": "1247 Maple Street, Riverside Heights",
+      "listing_price": "$385,000",
+      "square_feet": "1,850 sq ft",
+      "bedrooms": "3 bedrooms",
+      "bathrooms": "2.5 bathrooms",
+      "lot_size": "0.25 acres",
+      "year_built": "1998",
+      "property_type": "Single-family home"
+    },
+    "market_data": {
+      "comparable_sales": {
+        "1523 Oak Avenue": "$378,000 (sold 2 months ago)",
+        "892 Pine Circle": "$392,000 (sold 3 weeks ago)",
+        "1401 Elm Street": "$369,000 (sold 6 weeks ago)"
+      },
+      "market_trends": "Prices up 3.2% over last 6 months",
+      "days_on_market": "Average 28 days in this neighborhood",
+      "estimated_value": "$375,000 - $390,000"
+    },
+    "financing": {
+      "down_payment_options": ["5% ($19,250)", "10% ($38,500)", "20% ($77,000)"],
+      "interest_rates": "Current 30-year fixed: 6.8%",
+      "monthly_payment_estimate": "$2,420/month (with 10% down)",
+      "closing_costs": "$8,500 - $12,000 estimated"
+    },
+    "inspection_items": {
+      "roof_condition": "Good - minor shingle replacement needed",
+      "hvac_system": "AC unit installed 2019, furnace needs service",
+      "plumbing": "All functional, minor faucet repairs recommended",
+      "electrical": "Updated panel, all systems code compliant"
+    },
+    "transaction_timeline": {
+      "offer_submitted": "Day 1",
+      "negotiation_period": "Days 2-4",
+      "inspection_period": "Days 5-12", 
+      "appraisal_scheduled": "Days 8-15",
+      "final_approval": "Days 16-20",
+      "closing_date": "Day 21-25"
+    }
+  },
+  "students": {
+    "1": {
+      "objective": "As the Homebuyer, you are a first-time buyer looking to purchase your ideal home within budget while ensuring you get the best value and terms in this competitive market",
+      "phase_tasks": {
+        "Market Research": [
+          "Research comparable sales in the neighborhood",
+          "Calculate maximum affordable offer price based on your budget",
+          "Review property features and condition against your priorities"
+        ],
+        "Initial Offer": [
+          "Determine your opening offer strategy and price point",
+          "Select financing terms and down payment amount",
+          "Draft initial offer letter with contingencies"
+        ],
+        "Negotiation": [
+          "Respond to seller's counter-offer professionally",
+          "Negotiate inspection contingencies and timeline",
+          "Work toward mutually acceptable terms and price"
+        ],
+        "Due Diligence": [
+          "Schedule and attend home inspection",
+          "Review inspection findings and determine next steps",
+          "Coordinate mortgage appraisal appointment"
+        ],
+        "Contract Finalization": [
+          "Review final contract terms carefully",
+          "Confirm mortgage approval and funding timeline",
+          "Finalize closing date and location"
+        ],
+        "Closing": [
+          "Conduct final walkthrough of property",
+          "Sign all closing documents and loan papers",
+          "Receive keys and official ownership transfer"
+        ]
+      },
+      "data": {
+        "buyer_profile": {
+          "budget_max": "$400,000",
+          "down_payment_saved": "$45,000",
+          "annual_income": "$85,000",
+          "monthly_debt": "$850",
+          "pre_approval_amount": "$390,000"
+        },
+        "financing_options": {
+          "conventional_loan": "6.8% interest, 20% down preferred",
+          "fha_loan": "6.5% interest, 3.5% down minimum", 
+          "va_loan": "6.3% interest, 0% down (if eligible)"
+        },
+        "priorities": ["Move-in ready condition", "Good school district", "Under $385,000", "Quick closing preferred"],
+        "tools": ["Mortgage calculator", "Comparable sales data", "Inspection contingency forms"]
+      }
+    },
+    "2": {
+      "objective": "As the Home Seller, you need to sell your property quickly due to job relocation while maximizing your sale price and minimizing complications during the transaction",
+      "phase_tasks": {
+        "Market Research": [
+          "Review recent comparable sales to validate listing price",
+          "Analyze current market conditions and buyer demand",
+          "Assess your property's competitive advantages"
+        ],
+        "Initial Offer": [
+          "Review buyer's offer against your expectations",
+          "Calculate net proceeds from different price scenarios",
+          "Prepare counter-offer strategy and terms"
+        ],
+        "Negotiation": [
+          "Present counter-offer with justification",
+          "Negotiate inspection terms and repair responsibilities", 
+          "Balance price with timeline to meet relocation needs"
+        ],
+        "Due Diligence": [
+          "Coordinate access for buyer's home inspection",
+          "Review inspection report and negotiate repair requests",
+          "Facilitate appraiser access and provide property details"
+        ],
+        "Contract Finalization": [
+          "Review and approve final contract amendments",
+          "Confirm closing timeline works with your relocation",
+          "Prepare for document signing and title transfer"
+        ],
+        "Closing": [
+          "Complete any agreed-upon repairs or credits",
+          "Attend closing to sign transfer documents",
+          "Hand over keys and complete ownership transfer"
+        ]
+      },
+      "data": {
+        "seller_situation": {
+          "original_purchase_price": "$298,000 (2018)",
+          "outstanding_mortgage": "$245,000",
+          "relocation_deadline": "Must close by end of next month",
+          "recent_improvements": "$15,000 in kitchen updates (2023)"
+        },
+        "market_position": {
+          "listing_price": "$385,000",
+          "break_even_price": "$255,000", 
+          "target_net_proceeds": "$120,000",
+          "days_on_market": "12 days so far"
+        },
+        "negotiation_factors": ["Motivated to sell quickly", "Flexible on closing date", "Open to reasonable repairs", "Prefers cash or strong financing"],
+        "tools": ["Net proceeds calculator", "Repair cost estimates", "Closing timeline templates"]
+      }
+    }
+  },
+  "shared": {
+    "objective": "Complete a successful real estate transaction that benefits both buyer and seller while practicing professional negotiation, market analysis, and contract management skills",
+    "data": {
+      "transaction_context": "A motivated seller needs to relocate for work and a first-time buyer is looking for their ideal starter home. Both parties want a fair deal and smooth transaction.",
+      "market_conditions": {
+        "median_home_price": "$375,000",
+        "average_days_on_market": "28 days",
+        "current_interest_rates": "6.8% for 30-year fixed",
+        "inventory_level": "Low - buyer's market trending to balanced"
+      },
+      "legal_requirements": {
+        "disclosure_forms": "Property condition, lead paint, HOA requirements",
+        "inspection_period": "10 days standard in this market",
+        "appraisal_contingency": "Required for financing approval",
+        "title_insurance": "Protects both buyer and lender interests"
+      }
+    }
+  }
+}

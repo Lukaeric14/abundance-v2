@@ -1,2 +1,0 @@
-timestamp,run_id,stage,model,temperature,prompt_tokens,completion_tokens,cost_est,decision_summary,input_path,output_path,warning
-1755075508,d3b68cde-1c49-4afb-8aae-875fa6b1d329,llm_generate,openai/gpt-5-nano,0.6,,,,Generated project in 29.79s,./logs/d3b68cde-1c49-4afb-8aae-875fa6b1d329/prompt.json,./logs/d3b68cde-1c49-4afb-8aae-875fa6b1d329/output.json,

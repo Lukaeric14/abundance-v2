@@ -13,22 +13,12 @@ export interface ChatMessageLite {
   content: string
 }
 
-export default function TeacherView({ projectTitle, chat, initialSections = [], allSections = [], groupSize = 3, projectId, projectStatus = 'unknown', runId }: { projectTitle?: string; chat?: ChatMessageLite[]; initialSections?: any[]; allSections?: any[]; groupSize?: number; projectId?: string; projectStatus?: string; runId?: string }) {
+export default function TeacherView({ projectTitle, chat, mockData, groupSize = 3, projectId, projectStatus = 'unknown' }: { projectTitle?: string; chat?: ChatMessageLite[]; mockData?: any; groupSize?: number; projectId?: string; projectStatus?: string }) {
   const router = useRouter()
   const [objectiveCollapsed, setObjectiveCollapsed] = useState<boolean>(false)
   const [stepsCollapsed, setStepsCollapsed] = useState<boolean>(false)
   const [dataCollapsed, setDataCollapsed] = useState<boolean>(false)
-  const [activeViewer, setActiveViewer] = useState<'teacher' | 's1' | 's2' | 's3'>('teacher')
-  const [sections, setSections] = useState<any[]>(initialSections)
-  
-  // Update sections when initialSections changes
-  useEffect(() => {
-    setSections(initialSections)
-    console.log('TeacherView: initialSections updated, count =', initialSections.length)
-    if (initialSections.length > 0) {
-      console.log('TeacherView: sample section content =', initialSections[0]?.content_text?.substring(0, 50) + '...')
-    }
-  }, [initialSections])
+  const [activeViewer, setActiveViewer] = useState<'s1' | 's2'>('s1')
   const [isGenerating, setIsGenerating] = useState(projectStatus === 'generating')
   
   // Update generating state when projectStatus changes
@@ -36,80 +26,97 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
     setIsGenerating(projectStatus === 'generating')
     console.log('TeacherView: projectStatus =', projectStatus, 'isGenerating =', projectStatus === 'generating')
   }, [projectStatus])
-  const cachedAllRef = useRef(allSections)
-  const chooseContent = (type: string): string => {
-    console.log(`TeacherView chooseContent: type=${type}, activeViewer=${activeViewer}, sections.length=${sections.length}`)
-    const specific = sections.find((s: any) => s.section_type === type && typeof s.seat_number === 'number' && s.seat_number > 0)
-    const shared = sections.find((s: any) => s.section_type === type && (s.seat_number === null || typeof s.seat_number === 'undefined'))
-    const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
+  const formatDataForDisplay = (data: any): string => {
+    if (!data || typeof data !== 'object') return String(data)
     
-    const chosen = specific ?? shared ?? teacher
-    console.log(`TeacherView chooseContent: chosen section for ${type}:`, chosen)
+    const lines: string[] = []
     
-    // When viewing teacher, RPC already returns only seat 0. For students, prefer specific>shared
-    return chosen?.content_text || ''
-  }
-
-  const findSectionId = (type: string): string | undefined => {
-    const specific = sections.find((s: any) => s.section_type === type && typeof s.seat_number === 'number' && s.seat_number > 0)
-    const shared = sections.find((s: any) => s.section_type === type && (s.seat_number === null || typeof s.seat_number === 'undefined'))
-    const teacher = sections.find((s: any) => s.section_type === type && s.seat_number === 0)
-    return (specific ?? shared ?? teacher)?.id
-  }
-
-  const parseStepsContent = (stepsText: string): StepData[] => {
-    if (!stepsText) return getDefaultSteps()
-    
-    // If the content appears to be [object Object], it might be structured data
-    if (stepsText.includes('[object Object]')) {
-      return getDefaultSteps()
-    }
-    
-    try {
-      // Try to parse as JSON first
-      const parsed = JSON.parse(stepsText)
-      if (Array.isArray(parsed)) {
-        return parsed.map((step, index) => ({
-          id: step.id || (index + 1).toString(),
-          title: step.title || `Step ${index + 1}`,
-          description: step.description || '',
-          duration: step.duration || '5mins',
-          status: step.status || (index === 0 ? 'completed' : index === 1 ? 'active' : 'pending')
-        }))
-      }
-    } catch {
-      // Not JSON, try text parsing
-    }
-    
-    // Split by lines and filter out empty lines
-    const lines = stepsText.split('\n').filter(line => line.trim() && !line.includes('[object Object]'))
-    const steps: StepData[] = []
-    
-    lines.forEach((line, index) => {
-      // Look for numbered steps pattern like "1. Title - Description (duration)"
-      const match = line.match(/^(\d+)\.\s*(.+?)\s*-\s*(.+?)\s*\((\d+mins?)\)/)
-      if (match) {
-        const [, num, title, description, duration] = match
-        steps.push({
-          id: num,
-          title: title.trim(),
-          description: description.trim(),
-          duration: duration,
-          status: index === 0 ? 'completed' : index === 1 ? 'active' : 'pending'
+    Object.entries(data).forEach(([key, value]) => {
+      // Convert camelCase/snake_case to Title Case
+      const title = key
+        .replace(/_/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/\b\w/g, l => l.toUpperCase())
+      
+      lines.push(`${title}`)
+      lines.push('')
+      
+      if (typeof value === 'object' && value !== null) {
+        Object.entries(value).forEach(([subKey, subValue]) => {
+          const subTitle = subKey
+            .replace(/_/g, ' ')
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/\b\w/g, l => l.toUpperCase())
+          lines.push(`• ${subTitle}: ${String(subValue)}`)
         })
-      } else if (line.trim().length > 0) {
-        // Fallback: treat each line as a step
-        steps.push({
-          id: (index + 1).toString(),
-          title: line.trim(),
-          description: '',
-          duration: '5mins',
-          status: index === 0 ? 'completed' : index === 1 ? 'active' : 'pending'
+      } else if (Array.isArray(value)) {
+        value.forEach(item => {
+          lines.push(`• ${String(item)}`)
         })
+      } else {
+        lines.push(`• ${String(value)}`)
       }
+      lines.push('')
     })
     
-    return steps.length > 0 ? steps : getDefaultSteps()
+    return lines.join('\n').trim()
+  }
+
+  const chooseContent = (type: string): string => {
+    if (!mockData) return ''
+    
+    // Student view only
+    const seatNumber = activeViewer === 's1' ? '1' : '2'
+    const studentData = mockData.students?.[seatNumber]
+    
+    if (type === 'objective') {
+      return studentData?.objective || mockData.shared?.objective || ''
+    }
+    if (type === 'steps') {
+      // For steps, we need to show the current phase tasks for this student
+      if (studentData?.phase_tasks) {
+        const allTasks: string[] = []
+        Object.entries(studentData.phase_tasks).forEach(([phase, tasks]) => {
+          allTasks.push(`${phase}:`)
+          if (Array.isArray(tasks)) {
+            tasks.forEach((task: string) => allTasks.push(`  • ${task}`))
+          }
+          allTasks.push('')
+        })
+        return allTasks.join('\n')
+      }
+      return ''
+    }
+    if (type === 'data') {
+      // For students, show their specific data, but also include shared property details
+      let data = studentData?.data || {}
+      
+      // Also include general property data that both students should see
+      if (mockData.data) {
+        data = { ...mockData.data, ...data }
+      }
+      
+      return formatDataForDisplay(data)
+    }
+    
+    return ''
+  }
+
+  const parseStepsContent = (): StepData[] => {
+    if (!mockData) return getDefaultSteps()
+    
+    // Use the phases directly from mock data
+    if (mockData.phases && Array.isArray(mockData.phases)) {
+      return mockData.phases.map((phase: any, index: number) => ({
+        id: phase.id || (index + 1).toString(),
+        title: phase.title || `Phase ${index + 1}`,
+        description: phase.description || '',
+        duration: phase.duration || '5mins',
+        status: phase.status || (index === 0 ? 'completed' : index === 1 ? 'active' : 'pending')
+      }))
+    }
+    
+    return getDefaultSteps()
   }
 
   const getDefaultSteps = (): StepData[] => [
@@ -158,58 +165,12 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
     ]
 
   async function save(type: 'objective' | 'steps' | 'data', text: string) {
-    const id = findSectionId(type)
-    if (!id) return
-    await fetch('/api/sections', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ update: { id, content_text: text } }),
-    })
-    // Update local cache
-    setSections(prev => prev.map((s: any) => (s.id === id ? { ...s, content_text: text } : s)))
-    cachedAllRef.current = cachedAllRef.current.map((s: any) => (s.id === id ? { ...s, content_text: text } : s))
+    // For now, just log the save operation since we're using mock data
+    // In a real implementation, this would update the database or local state
+    console.log(`Save ${type}:`, text)
   }
 
-  // PROTOTYPE: fetch via RPC per active viewer; falls back gracefully
-  // Use server API to avoid exposing client keys; no env required client-side
-
-  useEffect(() => {
-    const run = async () => {
-      try {
-        if (!projectId) return
-        const payload =
-          activeViewer === 'teacher'
-            ? { projectId, role: 'teacher' }
-            : { projectId, role: 'student', seat: activeViewer === 's1' ? 1 : activeViewer === 's2' ? 2 : 3 }
-
-        // Try local cache first
-        const seat = payload.role === 'student' ? (payload as any).seat : 0
-        const cached = cachedAllRef.current.filter((s: any) => {
-          if (seat === 0) return s.seat_number === 0
-          return s.seat_number === null || s.seat_number === seat
-        })
-        if (cached.length > 0) {
-          setSections(cached)
-          return
-        }
-
-        const res = await fetch('/api/sections', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-        const json = await res.json()
-        if (res.ok && Array.isArray(json.sections)) {
-          setSections(json.sections)
-          // merge into cache
-          cachedAllRef.current = [...cachedAllRef.current, ...json.sections]
-        }
-      } catch {
-        // keep previous sections on error to avoid flicker
-      }
-    }
-    run()
-  }, [activeViewer, projectId])
+  // No need to fetch from API since we're using mock data directly
 
   // Poll for project completion when generating
   useEffect(() => {
@@ -334,51 +295,24 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
             </div>
           )}
           <div className="project-content">
-            {/* Header with Teacher and Students */}
+            {/* Header with Students Only */}
             <div className="project-header">
-              <div className="teacher-section">
-                <button type="button" className="avatar-btn" onClick={() => setActiveViewer('teacher')}>
-                  <div 
-                    className={`teacher-avatar ${activeViewer === 'teacher' ? 'selected-avatar' : ''}`}
-                    style={{ backgroundImage: `url('${imgAvatarOfTeacherCartoon}')` }}
-                  />
-                </button>
-                {activeViewer === 'teacher' && (
-                  <div className="text-sb-14">You (Teacher)</div>
-                )}
-              </div>
               <div className="students-section">
                 <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s1')}>
                   <div className={`student-avatar ${activeViewer === 's1' ? 'selected-avatar' : ''}`}>
-                    <div className="text-r-14">LE</div>
+                    <div className="text-r-14">BY</div>
                   </div>
                 </button>
                 {activeViewer === 's1' && (
-                  <div className="text-sb-14 selected-student-label">Student 1</div>
+                  <div className="text-sb-14 selected-student-label">Buyer</div>
                 )}
-                {groupSize >= 2 && (
-                  <>
-                    <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s2')}>
-                      <div className={`student-avatar ${activeViewer === 's2' ? 'selected-avatar' : ''}`}>
-                        <div className="text-r-14">SI</div>
-                      </div>
-                    </button>
-                    {activeViewer === 's2' && (
-                      <div className="text-sb-14 selected-student-label">Student 2</div>
-                    )}
-                  </>
-                )}
-                {groupSize >= 3 && (
-                  <>
-                    <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s3')}>
-                      <div className={`student-avatar ${activeViewer === 's3' ? 'selected-avatar' : ''}`}>
-                        <div className="text-r-14">JK</div>
-                      </div>
-                    </button>
-                    {activeViewer === 's3' && (
-                      <div className="text-sb-14 selected-student-label">Student 3</div>
-                    )}
-                  </>
+                <button type="button" className="avatar-btn" onClick={() => setActiveViewer('s2')}>
+                  <div className={`student-avatar ${activeViewer === 's2' ? 'selected-avatar' : ''}`}>
+                    <div className="text-r-14">SE</div>
+                  </div>
+                </button>
+                {activeViewer === 's2' && (
+                  <div className="text-sb-14 selected-student-label">Seller</div>
                 )}
               </div>
               {/* Objective collapsed bar when minimized */}
@@ -397,9 +331,9 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
 
             {/* Objective Section */}
             <ObjectiveComponent 
-              projectOverview="Define the scope and goals of your classroom project"
-              userRole={activeViewer === 'teacher' ? 'Facilitate and guide student learning' : 'Collaborate with teammates to complete project tasks'}
-              userObjective={chooseContent('objective') || 'Complete project objectives through collaborative learning'}
+              projectOverview="Navigate a real estate transaction from initial research to closing"
+              userRole={activeViewer === 's1' ? 'Homebuyer - First-time buyer seeking best value' : 'Home Seller - Relocating and motivated to sell'}
+              userObjective={chooseContent('objective') || 'Complete your role in this real estate transaction'}
               isCollapsible={true}
               isCollapsed={objectiveCollapsed}
               onToggleCollapse={() => setObjectiveCollapsed(!objectiveCollapsed)}
@@ -410,7 +344,7 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
               {!stepsCollapsed && (
                 <div className="steps-standalone-wrapper">
                   <Steps 
-                    steps={parseStepsContent(chooseContent('steps'))} 
+                    steps={parseStepsContent()} 
                     onCollapse={() => setStepsCollapsed(true)}
                   />
                 </div>
@@ -428,7 +362,7 @@ export default function TeacherView({ projectTitle, chat, initialSections = [], 
               )}
               <div className="data-section section-card">
                 <button className="toggle-abs" onClick={() => setDataCollapsed(v => !v)} aria-label="Toggle data">{dataCollapsed ? '▾' : '▴'}</button>
-                <div className="text-sb-14 card-title">{activeViewer === 'teacher' ? 'Data' : `Data — ${activeViewer === 's1' ? 'Student 1' : activeViewer === 's2' ? 'Student 2' : 'Student 3'}`}</div>
+                <div className="text-sb-14 card-title">{`Data — ${activeViewer === 's1' ? 'Buyer' : 'Seller'}`}</div>
                 {!dataCollapsed && (
                   <EditableArea
                     initialValue={chooseContent('data')}

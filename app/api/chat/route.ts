@@ -104,7 +104,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ chatId: currentChatId, message: text })
   }
 
-  // Create initial project in DB
+  // Load mock project data
+  const fs = await import('fs/promises')
+  const path = await import('path')
+  const mockDataPath = path.join(process.cwd(), 'data', 'mock-project.json')
+  const mockData = JSON.parse(await fs.readFile(mockDataPath, 'utf-8'))
+
+  // Create initial project in DB with mock data
   const insert = await supabase
     .from('projects')
     .insert({
@@ -114,7 +120,11 @@ export async function POST(req: NextRequest) {
       life_skill: project.life_skill,
       group_size: Number(project.group_size) || 2,
       duration_min: Number(project.duration_min) || 30,
-      spec_json: { status: 'generating', chat_id: currentChatId },
+      spec_json: { 
+        status: 'complete', 
+        chat_id: currentChatId,
+        sections: mockData.sections
+      },
     })
     .select('id')
     .single()
@@ -125,48 +135,8 @@ export async function POST(req: NextRequest) {
 
   const projectId = insert.data.id
 
-  // Call generate-project microservice
-  try {
-    const microserviceUrl = process.env.GENERATE_PROJECT_URL || 'http://localhost:8080'
-    const response = await fetch(`${microserviceUrl}/start`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        project_id: projectId,
-        chat_id: currentChatId,
-        title: project.title || 'Untitled Project',
-        topic: project.topic,
-        life_skill: project.life_skill,
-        group_size: Number(project.group_size) || 2,
-        duration_min: Number(project.duration_min) || 30,
-        owner_email: user.email
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`Microservice error: ${response.status}`)
-    }
-
-    const result = await response.json()
-    console.log('Microservice started:', result)
-
-    // Update project with run_id for tracking
-    await supabase
-      .from('projects')
-      .update({ spec_json: { status: 'generating', chat_id: currentChatId, run_id: result.run_id } })
-      .eq('id', projectId)
-
-  } catch (error) {
-    console.error('Microservice error:', error)
-    // Update project status to error
-    await supabase
-      .from('projects')
-      .update({ spec_json: { status: 'error', chat_id: currentChatId, error: (error as Error).message } })
-      .eq('id', projectId)
-  }
-
   // Save a human-friendly assistant confirmation message as the final message
-  const confirmation = `Generated project: ${project.title || 'Untitled Project'}. Processing in background...`
+  const confirmation = `Generated project: ${project.title || 'Untitled Project'}. Project is ready to view!`
   await supabase
     .from('chat_messages')
     .insert({ chat_id: currentChatId, role: 'assistant', content: confirmation })
