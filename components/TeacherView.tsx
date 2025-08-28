@@ -5,6 +5,7 @@ import { createBrowserSupabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Steps, { StepData } from './ui/Steps'
 import ObjectiveComponent from './ui/ObjectiveComponent'
+import SessionManager from './SessionManager'
 
 const imgAvatarOfTeacherCartoon = "http://localhost:3845/assets/ad01a6641c76cff56de1d4a5dd942885df62bb80.png";
 
@@ -370,6 +371,11 @@ export default function TeacherView({ projectTitle, chat, mockData, groupSize = 
                   />
                 )}
               </div>
+            </div>
+            
+            {/* Session Management Section */}
+            <div className="session-management-wrapper" style={{ marginTop: '20px' }}>
+              <SessionManager projectId={projectId || ''} groupSize={groupSize} />
             </div>
           </div>
         </div>

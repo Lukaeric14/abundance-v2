@@ -11,6 +11,13 @@ A Next.js application with TypeScript, Tailwind CSS, and server-only Supabase au
 - **Server Components** and **Server Actions**
 - **Route Protection** via middleware
 - **Responsive Design** with modern UI components
+- **Session Management** for NPC roleplay projects
+  - Unique session URLs for student access
+  - Phase-based progression system (Research → Discovery → Planning → Implementation → Reflection)
+  - Real-time timers with phase limits
+  - Session persistence (students can leave and return)
+  - Automatic expiration after 48 hours
+  - Conversation history tracking
 
 ## Setup
 
@@ -91,15 +98,39 @@ middleware.ts           # Route protection middleware
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
+## Session Management
+
+The NPC roleplay session management system enables teachers to create and manage student sessions:
+
+### Quick Start
+1. Navigate to any project page
+2. Find the "Session Management" section
+3. Click "Start New Session" to create a session
+4. Share the generated URL with students
+5. Monitor progress through the session interface
+
+### Session Features
+- **Unique URLs**: Each session gets a 6-character code (e.g., `/project/water-duct/session/abc123`)
+- **Phase System**: Students progress through 5 phases with configurable time limits
+- **Real-time Tracking**: Live timers and progress indicators
+- **Persistence**: Students can leave and return to active sessions
+- **Auto-cleanup**: Sessions expire after 48 hours
+
+### API Endpoints
+- `POST /api/sessions` - Create, get, update sessions
+- `POST /api/cleanup` - Clean up expired sessions
+
+See [docs/SESSION_MANAGEMENT.md](docs/SESSION_MANAGEMENT.md) for detailed documentation.
+
 ## Next Steps
 
-The chat builder interface is ready for development. Key areas to expand:
+The session management system is implemented. Key areas to expand:
 
-- Drag-and-drop chat interface builder
-- AI model integrations
-- Real-time collaboration features
-- Custom themes and styling options
-- Export and deployment capabilities
+- Real-time WebSocket updates for live collaboration
+- Session analytics and reporting dashboard
+- Custom phase configurations per project type
+- AI-powered NPC interactions within sessions
+- Student progress tracking across multiple sessions
 
 ## Supabase participants/sections migrations
 
