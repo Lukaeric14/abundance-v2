@@ -1,7 +1,6 @@
 "use client"
 import './TeacherView.css'
 import { useEffect, useRef, useState } from 'react'
-import { createBrowserSupabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Steps, { StepData } from './ui/Steps'
 import ObjectiveComponent from './ui/ObjectiveComponent'

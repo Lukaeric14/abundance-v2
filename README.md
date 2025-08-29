@@ -1,6 +1,6 @@
 # Abundance Projects v0.1
 
-A Next.js application with TypeScript, Tailwind CSS, and server-only Supabase authentication for building AI chat interfaces.
+A Next.js application with TypeScript, Tailwind CSS, and server-only Supabase authentication for AI-assisted project generation.
 
 ## Features
 
@@ -93,30 +93,24 @@ middleware.ts           # Route protection middleware
 
 ## Next Steps
 
-The chat builder interface is ready for development. Key areas to expand:
+The core project generation system is implemented. Key areas to expand:
 
-- Drag-and-drop chat interface builder
-- AI model integrations
+- Enhanced AI project generation pipeline
 - Real-time collaboration features
-- Custom themes and styling options
-- Export and deployment capabilities
+- Advanced teacher/student project views
+- Project analytics and reporting
+- Custom project templates and configurations
 
-## Supabase participants/sections migrations
+## Database Migrations
 
-Commands to apply migrations and optionally seed:
+The database uses core tables (projects, chats, chat_messages) for efficient data storage. To apply migrations:
 
 ```bash
-# create migrations (already added by PR)
-supabase migration new add_participants_sections
-supabase migration new add_sections_rpcs
-
 # apply to local
 supabase db reset   # or: supabase db push
 
 # generate types (optional)
 supabase gen types typescript --local > src/types/supabase.ts
-
-# optional: seed
-# edit supabase/seed.sql and set :project_id
-supabase db reset --seed
 ```
+
+Note: Project data is stored in the project's `spec_json` field for flexible content management.

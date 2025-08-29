@@ -1,11 +1,11 @@
 ## Abundance Projects — Project Overview
 
-Abundance is a Next.js app that helps educators generate classroom-ready, standards-aligned project experiences. It combines a secure web app (Supabase auth, server actions) with mock project data for demonstration purposes.
+Abundance is a Next.js app that helps educators generate AI-assisted project experiences through a chat interface. It combines secure server-side authentication with efficient data storage for educational content creation.
 
 ### Key points
 - **Web app**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Supabase (server-only auth)
 - **LLM orchestration**: LangChain + OpenAI
-- **Mock Data**: Project generation now uses static mock data from `data/mock-project.json` (microservices removed)
+- **Mock Data**: Project generation uses static mock data from `data/mock-project.json` for demonstration
 - **Database**: Supabase Postgres with migrations in `supabase/migrations`
 
 ## Tech stack
@@ -18,8 +18,7 @@ Abundance is a Next.js app that helps educators generate classroom-ready, standa
 ```text
 app/
   api/
-    chat/route.ts        # Chat endpoint; kicks off project generation
-    sections/route.ts    # Teacher/student section fetch & updates via Supabase RPCs
+    chat/route.ts        # Chat endpoint; handles project generation with mock data
   (pages, layout, auth views)
 
 components/              # UI and layout components
@@ -27,14 +26,13 @@ lib/                     # Supabase client/server, auth helpers, utils
 middleware.ts            # Route protection
 supabase/                # Config, migrations, seed
 
-generate-project/        # Microservice v1 (Flask, single-chain, SSE) — WIP
-generate-projectv2/      # Microservice v2 (node-based pipeline) — WIP
+# Streamlined architecture focused on core functionality
 ```
 
 ## App capabilities
 - **Auth flow**: Server-only Supabase auth; unauthenticated users redirected to `/login` (see `middleware.ts` and `app/login/page.tsx`).
-- **Chat to project**: `POST /api/chat` uses LangChain to collect minimal requirements and, when ready, creates a `projects` row and calls the microservice to generate the full project spec.
-- **Sections API**: `POST /api/sections` fetches teacher or student views of project sections via Supabase RPCs and allows text updates for a section record.
+- **Chat to project**: `POST /api/chat` uses LangChain to collect minimal requirements and generates a `projects` row with mock data from the demonstration file.
+- **Project API**: Data is stored in the project's `spec_json` field using structured mock data.
 
 ## Desired outcomes
 - **For teachers**: Classroom-ready, realistic projects that fit a specified grade band, time window, and target skills; minimal prep; clear steps and artifacts.
@@ -54,9 +52,7 @@ generate-projectv2/      # Microservice v2 (node-based pipeline) — WIP
   - Persists chat messages, creates a `projects` row with mock data from `data/mock-project.json`.
   - Expects the model to sometimes return an action JSON: `{"action":"generate_project","project":{...}}`.
 
-- `POST /api/sections`
-  - Body: `{ projectId, role: 'teacher' | 'student', seat?: number }` or `{ update: { id, content_text } }`.
-  - Calls RPCs `get_teacher_sections` or `get_student_sections`; supports updating a section row’s `content_text`.
+
 
 ## Environment
 Create `.env.local` in the repo root for the Next.js app:
@@ -75,25 +71,25 @@ npm run dev
 # http://localhost:3000
 ```
 
-The app now uses mock data from `data/mock-project.json` instead of external microservices.
+The app uses mock data from `data/mock-project.json` for demonstration purposes.
 
 ## Database & migrations
 - Supabase configuration in `supabase/config.toml`
-- SQL migrations under `supabase/migrations/` (participants/sections, RPCs, seeds, and related updates)
+- SQL migrations under `supabase/migrations/` (core tables for efficient data management)
 - Local workflows: `supabase db reset` / `supabase db push` (see `README.md`)
 
 ## User workflows
 
 ### Teacher/PM (happy path)
 1. Start a chat in the web app; provide topic, group size (2–4), life skill, time window.
-2. When prompted, the assistant returns a generation action. The app creates a project and starts the microservice run.
-3. While the run proceeds, the teacher can refresh or later open the project view to see sections (teacher view and shared/student views).
-4. Minor edits can be applied via `POST /api/sections` for text content fields.
-5. If results aren’t satisfactory, re-run generation (idempotent by `(project_id, chat_id)` in v1; planned re-run knobs in v2).
+2. When prompted, the assistant returns a generation action. The app creates a project with mock data.
+3. The teacher can open the project view to see the generated content and sections.
+4. Project data is loaded from the mock data in `spec_json`.
+5. If results aren't satisfactory, start a new chat to generate different content.
 
 ### Student
 1. Student opens a seat-specific view for a project.
-2. The app requests `POST /api/sections` with `role='student'` and `seat=n` to fetch individualized steps and private data slices.
+2. Student data is loaded from the project's mock data structure.
 3. Students complete steps and artifacts guided by the objective and shared data.
 
 ### Internal reviewer/content engineer
@@ -119,54 +115,25 @@ The app now uses mock data from `data/mock-project.json` instead of external mic
 ### New project screen
 - Minimal surface prompting “Ask Abundance…” to seed a new project via chat.
 
-## System workflows
+## System workflow
 
-### End-to-end (app + microservice v1)
-1. Chat flow elicits minimal spec → app inserts into `projects` with `spec_json: {status: 'generating'}`.
-2. App calls microservice `POST /start` with project/chat metadata.
-3. Microservice writes incremental updates to `projects.spec_json` and emits SSE events.
-4. On completion, `spec_json.status` becomes `complete` (or `error` on failure);
-5. App surfaces teacher/student sections via RPCs.
+1. User starts chat and provides project requirements (topic, group size, life skill, duration)
+2. LangChain processes the conversation and determines when to generate a project
+3. App creates a new `projects` row with mock data from `data/mock-project.json`
+4. User can view the generated project through the teacher interface
 
-### Orchestrated pipeline (v2 target)
-1. Spec Builder → creates a constrained spec from the seed.
-2. Standards Mapper → binds to curriculum codes and evidence notes.
-3. Objective Composer → world, teacher objective, base roles.
-4. Step Planner → global steps and artifacts.
-5. Shared Data Maker → knobs, datasets, ranges with units.
-6. Role Expanders → individualized steps and private data.
-7. Merge → assemble canonical bundle; ensure ordering and naming.
-8. Validators → schema, consistency, objective-fit.
-9. Fixer → small, safe edits; otherwise escalate with guidance.
+## Data and Quality
+- **Mock data**: Consistent demonstration data from `data/mock-project.json`
+- **Simple validation**: Basic checks on user input and project creation
+- **Logging**: Server-side logging for debugging and monitoring
 
-## Validation and QA
-- **Schema checks**: required fields, enums, ordering (always World → Teacher Objective → Roles → Steps → Shared Data → Individuals → Standards).
-- **Consistency checks**: units, references, difficulty within grade band, time fit.
-- **Objective-fit**: evidence for each standards target is present in steps/artifacts.
-- **Snapshot tests and golden seeds** (v2): guard against regressions.
+## Architecture Philosophy
 
-## Observability
-- **Runs**: start/end, node timings, token counts (if LLM), sizes of key payloads.
-- **Logging**: CSV logs with PII redaction (v1), structured node traces (v2 direction).
-- **Events**: SSE in v1; richer streaming/trace views planned for v2.
-
-## Microservice(s) — status and intent
-
-There are two versions of the "generate project" microservice in this repo. Both are works in progress and not yet where we want them:
-
-### v1 — `generate-project/` (current integration target, WIP)
-- **Architecture**: Flask app with a single LLM chain that produces the full project spec. Supports SSE for progress events and idempotent runs by `(project_id, chat_id)`.
-- **Endpoints**: `POST /start`, `GET /events/stream?run_id=...`, `GET /status/<project_id>`, `GET /health>`.
-- **Pros**: Simple to operate, end-to-end runnable, CSV logging, incremental writes to `projects.spec_json`.
-- **Gaps**: Single-shot generation can drift; limited node-level observability/validation; schema/quality checks are basic.
-
-### v2 — `generate-projectv2/` (next-gen pipeline, WIP)
-- **Architecture**: A node-based pipeline (Spec Builder → Standards Mapper → Objective Composer → Step Planner → Shared Data Maker → Role Expanders → Merge → Validators → Fixer). Each node can be run and tested in isolation.
-- **Status**: Early development with initial nodes and tests; richer PRD/docs in `generate-projectv2/docs/` and `v2.md`.
-- **Pros**: Deterministic stages, better observability and contracts, targeted validators/fixers.
-- **Gaps**: Not fully wired end-to-end; APIs and schemas may change; not production-ready.
-
-The Next.js app currently expects a `POST /start` endpoint at `GENERATE_PROJECT_URL` and assumes v1 semantics. As v2 matures, we plan to align the app to the orchestrated pipeline and enrich progress/validation surfaces.
+The app focuses on core functionality with a clean design:
+- **Single API endpoint** (`/api/chat`) handles all project generation
+- **Mock data integration** for demonstration and testing
+- **Server-side only** authentication and data access
+- **Minimal dependencies** for easier maintenance
 
 ## Scripts (app)
 From `package.json`:
@@ -176,13 +143,14 @@ From `package.json`:
 - **save / quick / commit / sync / deploy / restart**: convenience git and lifecycle helpers
 
 ## Contributing
-- Start with `README.md` for setup and Supabase workflows.
-- For the microservice, prefer v1 for end-to-end manual testing today; explore v2 docs to understand the target architecture.
-- Expect breaking changes in both microservice folders while we converge on v2.
+- Start with `README.md` for setup and Supabase workflows
+- Focus on core chat-to-project functionality
+- Database schema uses 3 core tables for streamlined development
 
 ## Roadmap (high level)
-- Stabilize v1 schema and improve guardrails
-- Complete v2 nodes, validators, and fixer loop; add streaming/observability surfaces
-- Migrate the app to v2’s API/contract and enrich in-app progress UX
+- Enhance AI project generation with better prompts
+- Add real-time collaboration features
+- Implement advanced teacher/student views
+- Add project analytics and reporting
 
 
